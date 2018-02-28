@@ -11,17 +11,17 @@ e.g.:
 frtc.sh 6 1000 150 Hsalinarum ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/006/805/GCF_000006805.1_ASM680v1/GCF_000006805.1_ASM680v1_genomic.fna.gz
 ```
 
-there is a directory tree prerequisite to run frtc.  
-an adequate directory tree to run frtc must look like:
+There is a directory tree prerequisite to run frtc.  
+An adequate directory tree to run frtc must look like:
 
 ```
 yourDirectory
-├── removeInconsistentPairs.R			 provided
-├── frtc.sh					 provided
-├── misc					 notProvided
-│   ├── adap.fa
-└── raw 					 notProvided
-    ├── S1_R1.fastq
+├── removeInconsistentPairs.R	provided
+├── frtc.sh			provided
+├── misc			provided
+│   ├── adap.fa			notProvided
+└── raw 			provided
+    ├── S1_R1.fastq		notProvided
     ├── S1_R2.fastq
     ├── S2_R1.fastq
     ├── S2_R2.fastq
