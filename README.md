@@ -2,7 +2,7 @@
 
 ## USAGE
 
-```{bash}
+```{shell}
 frtc.sh <threads> <maxfragsize> <read_size> <spp> <url>
 ```
 
