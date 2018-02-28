@@ -31,26 +31,28 @@ yourDirectory
     └── S4_R2.fastq
 ```
 
-raw file names must be ended with R1 or R2 and
-must have fastq extension (i.e. uncompressed)
-if the libraries are paired-end
-e.g. S1_R1.fastq
-     S1_R2.fastq
+Raw file names must be ended with R1 or R2 and must have fastq extension (i.e. uncompressed).  
 
-if the libraries are single-end
-e.g. S1_R1.fastq
+If the libraries are paired-end:  
 
-adap.fa must be a fasta file containing
+e.g. S1_R1.fastq  
+     S1_R2.fastq  
+
+If the libraries are single-end
+
+e.g. S1_R1.fastq  
+
+**adap.fa must** be a fasta file containing
 what adapters would look like if they are sequenced.
 for more information, check https://support.illumina.com/bulletins/2016/12/what-sequences-do-i-use-for-adapter-trimming.html
 the file must look like:
 
-\>indexedAdapter
+```
+>indexedAdapter
 TGGAATTCTCGGGTGCCAAGGAACTCCAGTCAC
-\>nonIndexedAdapter
+>nonIndexedAdapter
 GATCGTCGGACTGTAGAACTCTGAACGTGTAGA
-
-but with no hashes or spaces
+```
 
 furthermore, you have to install manually the program requisites.
 maybe newer versions are compatible, but these were the ones used to build and test
@@ -77,23 +79,24 @@ to write coverage files (bedgraph and IGV files)
 it also counts the start position of reads
 and end position if a paired-end experiment is supplied
 
+```
 single-end
                    end position (@ threeprime directory; only meaningful in a few cases; use with caution)
 R1                 |
-\------------------->
+------------------->
 |
 start position (@ fiveprime directory)
 
 paired-end
                      RNA FRAGMENT (INSERT)
 5prime                                                3prime
-\------------------------------------------------------------
+------------------------------------------------------------
 
 R1                                                         end position (@ threeprime directory)
 --------------->                                           |
 |                                       <-------------------
 start position (@ fiveprime directory)                    R2
-
+```
 
 \>>>>>>>>>>>>>>>>>>>>>>>>>>>>WARNING<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 be aware this feature doesn't work for dUTP library preparations;
