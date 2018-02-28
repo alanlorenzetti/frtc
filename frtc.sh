@@ -8,7 +8,7 @@
 # the manual is supplied on README.md or on the end of this file
 
 # showing usage hints if no arguments are supplied
-if [ $# -eq 0 ] ; then echo '
+if [ $# -ne 6 ] ; then echo '
 Usage:
 
 ./frtc.sh <threads> <maxfragsize> <read_size> <spp> <url>
