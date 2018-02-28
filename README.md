@@ -24,7 +24,8 @@ start position (@ fiveprime directory)                    R2
 ```
 
 **Warning**  
-Be aware this feature doesn't work for dUTP library preparations and be aware that uniq mode is not supported for fiveprime, threeprime and TSSAR input results.
+
+Be aware this feature doesn't work for dUTP library preparations and be aware that uniq mode is not supported for fiveprime, threeprime and TSSAR input results.  
 
 Furthermore, it will filter bam files in order to keep only the R1 files, for they are useful to find TSS in dRNASeq experiments (e.g. TEXminus vs. TEXplus experiments) the filtered bams are placed within tssarinput directory.  
 
@@ -32,21 +33,22 @@ This program features a few modules. Each step usually relies on the previous on
 
 Those modules (or steps) are summarized below:  
 
-1. trimming files
-2. downloading reference genome and annotation from NCBI RefSeq; building HISAT2 index and aligning to ref. genome
-3. filtering uniquely aligned reads
-4. converting SAM files to BAM and sorting them by read name (performed by SAMtools)
-5. adjusting position of multi-mappers using MMR and removing pairs that do not match each other (custom Rscript)
-6. creating coverage files (bedgraph and igv format) using deepTools
-7. creating TSSAR input BAM files
-8. creating five prime profiling coverage (bedgraph format) using bedtools
-9. creating three prime profiling coverage (bedgraph format) using bedtools
+1. Trimming files
+2. Downloading reference genome and annotation from NCBI RefSeq; building HISAT2 index and aligning to ref. genome
+3. Filtering uniquely aligned reads
+4. Converting SAM files to BAM and sorting them by read name (performed by SAMtools)
+5. Adjusting position of multi-mappers using MMR and removing pairs that do not match each other (custom Rscript)
+6. Creating coverage files (bedgraph and igv format) using deepTools
+7. Creating TSSAR input BAM files
+8. Creating five prime profiling coverage (bedgraph format) using bedtools
+9. Creating three prime profiling coverage (bedgraph format) using bedtools
 
 ## Usage
 
 ```{shell}
 frtc.sh <threads> <maxfragsize> <read_size> <spp> <url>
 ```
+
 e.g.:
 
 ```{shell}
@@ -83,7 +85,7 @@ If the libraries are single-end:
 
 e.g. S1_R1.fastq  
 
-**adap.fa must** be a fasta file containing what adapters would look like if they are sequenced. For more information, check https://support.illumina.com/bulletins/2016/12/what-sequences-do-i-use-for-adapter-trimming.html  
+**adap.fa** must be a fasta file containing what adapters would look like if they are sequenced. For more information, check https://support.illumina.com/bulletins/2016/12/what-sequences-do-i-use-for-adapter-trimming.html  
 
 The file must look like:  
 
