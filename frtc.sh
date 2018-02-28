@@ -7,8 +7,6 @@
 # please, Read The Following Manual before using this script
 # do not forget to set the custom variables below
 
-# testing git command line
-
 ####################################
 # USAGE
 ####################################
