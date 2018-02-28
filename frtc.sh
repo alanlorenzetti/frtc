@@ -7,8 +7,9 @@
 version=0.3
 lastupdate=20180228
 
-# please, Read The Following Manual before using this script
-# the manual is supplied on README.md or on the end of this file
+# please, check the README.md file before using this script
+# there is also a version of the manual on the end of this file
+# which can be accessed using ./frtc.sh --help
 
 # starting an if statement to show the help
 # which is presented on the end of the file
