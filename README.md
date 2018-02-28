@@ -1,5 +1,47 @@
 # From Raw To Coverage: An automatic pipeline for RNA-Seq Analysis.
 
+## Purpose and General Info
+
+This script will perform every task from trimming Illumina RNASeq raw data (fastq files) to write coverage files (bedgraph and IGV files). It also counts the start position of reads and end position if a paired-end experiment is supplied:
+
+```
+single-end
+                   end position (@ threeprime directory; only meaningful in a few cases; use with caution)
+R1                 |
+------------------->
+|
+start position (@ fiveprime directory)
+
+paired-end
+                     RNA FRAGMENT (INSERT)
+5prime                                                3prime
+------------------------------------------------------------
+
+R1                                                         end position (@ threeprime directory)
+--------------->                                           |
+|                                       <-------------------
+start position (@ fiveprime directory)                    R2
+```
+
+**Warning**  
+Be aware this feature doesn't work for dUTP library preparations and be aware that uniq mode is not supported for fiveprime, threeprime and TSSAR input results.
+
+Furthermore, it will filter bam files in order to keep only the R1 files, for they are useful to find TSS in dRNASeq experiments (e.g. TEXminus vs. TEXplus experiments) the filtered bams are placed within tssarinput directory.  
+
+This program features a few modules. Each step usually relies on the previous one, but they will be executed only if the output directory is not created. This is a simple way to enable the rerun of the late steps without starting from the beginning.  
+
+Those modules (or steps) are summarized below:  
+
+1. trimming files
+2. downloading reference genome and annotation from NCBI RefSeq; building HISAT2 index and aligning to ref. genome
+3. filtering uniquely aligned reads
+4. converting SAM files to BAM and sorting them by read name (performed by SAMtools)
+5. adjusting position of multi-mappers using MMR and removing pairs that do not match each other (custom Rscript)
+6. creating coverage files (bedgraph and igv format) using deepTools
+7. creating TSSAR input BAM files
+8. creating five prime profiling coverage (bedgraph format) using bedtools
+9. creating three prime profiling coverage (bedgraph format) using bedtools
+
 ## USAGE
 
 ```{shell}
@@ -69,62 +111,6 @@ bedtools v2.26.0 (also tested with v2.21.0) (@ PATH)
 all the prerequisites will be checked before running
 
 
-PURPOSE AND GENERAL INFO
 
-
-this script will perform every task
-from trimming Illumina RNASeq raw data (fastq files)
-to write coverage files (bedgraph and IGV files)
-
-it also counts the start position of reads
-and end position if a paired-end experiment is supplied
-
-```
-single-end
-                   end position (@ threeprime directory; only meaningful in a few cases; use with caution)
-R1                 |
-------------------->
-|
-start position (@ fiveprime directory)
-
-paired-end
-                     RNA FRAGMENT (INSERT)
-5prime                                                3prime
-------------------------------------------------------------
-
-R1                                                         end position (@ threeprime directory)
---------------->                                           |
-|                                       <-------------------
-start position (@ fiveprime directory)                    R2
-```
-
-\>>>>>>>>>>>>>>>>>>>>>>>>>>>>WARNING<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-be aware this feature doesn't work for dUTP library preparations;
-be aware that uniq mode is not supported for
-fiveprime, threeprime and TSSAR input results
-\---------------------------------------------------------------
-
-furthermore, it will filter bam files in order to keep
-only the R1 files, for they are useful to find TSS
-in dRNASeq experiments (e.g. TEXminus vs. TEXplus experiments)
-the filtered bams are placed within tssarinput directory
-
-there are a few modules.
-each step usually relies on the previous one
-but they will be executed only if the output
-directory is not created.
-this is a simple way to enable the rerun of the
-late steps without starting from the beginning
-
-those modules (or steps) are summarized below:
-1. trimming files
-2. downloading reference genome and annotation from NCBI RefSeq; building HISAT2 index and aligning to ref. genome
-3. filtering uniquely aligned reads
-4. converting SAM files to BAM and sorting them by read name (performed by SAMtools)
-5. adjusting position of multi-mappers using MMR and removing pairs that do not match each other (custom Rscript)
-6. creating coverage files (bedgraph and igv format) using deepTools
-7. creating TSSAR input BAM files
-8. creating five prime profiling coverage (bedgraph format) using bedtools
-9. creating three prime profiling coverage (bedgraph format) using bedtools
 
 
