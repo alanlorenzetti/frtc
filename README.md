@@ -1,6 +1,6 @@
 # From Raw To Coverage: An automated pipeline for RNA-Seq Analysis.
 
-## Purpose and General Info
+## Purpose and General Information
 
 This script will perform every task from trimming Illumina RNASeq raw data (fastq files) to write coverage files (bedgraph and IGV files). It also counts the start position of reads and end position if a paired-end experiment is supplied:
 
@@ -43,7 +43,7 @@ Those modules (or steps) are summarized below:
 8. Creating five prime profiling coverage (bedgraph format) using bedtools
 9. Creating three prime profiling coverage (bedgraph format) using bedtools
 
-## Usage
+## Usage and Requisites
 
 ```{shell}
 frtc.sh <threads> <maxfragsize> <read_size> <spp> <url>
