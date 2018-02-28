@@ -1,10 +1,6 @@
 # commit and push script
 addCommitPush.sh
 
-# ignoring dir keepers
-misc/.dirKeeper
-raw/.dirKeeper
-
 # OS generated files #
 ######################
 .DS_Store
