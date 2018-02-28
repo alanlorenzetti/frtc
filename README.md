@@ -5,13 +5,16 @@
 ```{shell}
 frtc.sh <threads> <maxfragsize> <read_size> <spp> <url>
 ```
-
 e.g.:
+
+```{shell}
 frtc.sh 6 1000 150 Hsalinarum ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/006/805/GCF_000006805.1_ASM680v1/GCF_000006805.1_ASM680v1_genomic.fna.gz
+```
 
 there is a directory tree prerequisite to run frtc.
-an adequate directory tree to run frtc must look like
+an adequate directory tree to run frtc must look like:
 
+```
 yourDirectory
 ├── removeInconsistentPairs.R			 provided
 ├── frtc.sh					 provided
@@ -26,6 +29,7 @@ yourDirectory
     ├── S3_R2.fastq
     ├── S4_R1.fastq
     └── S4_R2.fastq
+```
 
 raw file names must be ended with R1 or R2 and
 must have fastq extension (i.e. uncompressed)
@@ -41,9 +45,9 @@ what adapters would look like if they are sequenced.
 for more information, check https://support.illumina.com/bulletins/2016/12/what-sequences-do-i-use-for-adapter-trimming.html
 the file must look like:
 
->indexedAdapter
+\>indexedAdapter
 TGGAATTCTCGGGTGCCAAGGAACTCCAGTCAC
->nonIndexedAdapter
+\>nonIndexedAdapter
 GATCGTCGGACTGTAGAACTCTGAACGTGTAGA
 
 but with no hashes or spaces
@@ -76,14 +80,14 @@ and end position if a paired-end experiment is supplied
 single-end
                    end position (@ threeprime directory; only meaningful in a few cases; use with caution)
 R1                 |
-------------------->
+\------------------->
 |
 start position (@ fiveprime directory)
 
 paired-end
                      RNA FRAGMENT (INSERT)
 5prime                                                3prime
-------------------------------------------------------------
+\------------------------------------------------------------
 
 R1                                                         end position (@ threeprime directory)
 --------------->                                           |
@@ -95,7 +99,7 @@ start position (@ fiveprime directory)                    R2
 be aware this feature doesn't work for dUTP library preparations;
 be aware that uniq mode is not supported for
 fiveprime, threeprime and TSSAR input results
----------------------------------------------------------------
+\---------------------------------------------------------------
 
 furthermore, it will filter bam files in order to keep
 only the R1 files, for they are useful to find TSS
