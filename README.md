@@ -2,7 +2,7 @@
 
 ## Purpose and General Information
 
-This script will perform every task from trimming Illumina RNASeq raw data (fastq files) to write coverage files (bedgraph and IGV files). It also counts the start position of reads and end position if a paired-end experiment is supplied:
+This script will perform every task from trimming Illumina RNA-Seq raw data (fastq files) to write coverage files (bedgraph and IGV files). It also counts the start position of reads and end position if a paired-end experiment is supplied:
 
 ```
 single-end
