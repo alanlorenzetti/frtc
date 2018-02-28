@@ -42,7 +42,7 @@ Those modules (or steps) are summarized below:
 8. creating five prime profiling coverage (bedgraph format) using bedtools
 9. creating three prime profiling coverage (bedgraph format) using bedtools
 
-## USAGE
+## Usage
 
 ```{shell}
 frtc.sh <threads> <maxfragsize> <read_size> <spp> <url>
@@ -77,17 +77,15 @@ Raw file names must be ended with R1 or R2 and must have fastq extension (i.e. u
 
 If the libraries are paired-end:  
 
+e.g. S1_R1.fastq S1_R2.fastq  
+
+If the libraries are single-end:  
+
 e.g. S1_R1.fastq  
-     S1_R2.fastq  
 
-If the libraries are single-end
+**adap.fa must** be a fasta file containing what adapters would look like if they are sequenced. For more information, check https://support.illumina.com/bulletins/2016/12/what-sequences-do-i-use-for-adapter-trimming.html  
 
-e.g. S1_R1.fastq  
-
-**adap.fa must** be a fasta file containing
-what adapters would look like if they are sequenced.
-for more information, check https://support.illumina.com/bulletins/2016/12/what-sequences-do-i-use-for-adapter-trimming.html
-the file must look like:
+The file must look like:  
 
 ```
 >indexedAdapter
@@ -96,21 +94,14 @@ TGGAATTCTCGGGTGCCAAGGAACTCCAGTCAC
 GATCGTCGGACTGTAGAACTCTGAACGTGTAGA
 ```
 
-furthermore, you have to install manually the program requisites.
-maybe newer versions are compatible, but these were the ones used to build and test
-this script
+Furthermore, you have to install manually the program requisites. Maybe newer versions are compatible, but these were the ones used to build and test this script:  
 
-trimmomatic v0.36 (must be located @ /opt/Trimmomatic-0.36/trimmomatic-0.36.jar)
-hisat2 v2.1.0 (@ PATH)
-curl 7.47 (also tested with v7.37) (@ PATH)
-samtools v1.3.1 (@ PATH)
-mmr default version (@ PATH)
-deeptools 2.5.3 (@PATH)
-bedtools v2.26.0 (also tested with v2.21.0) (@ PATH)
+trimmomatic v0.36 (must be located @ /opt/Trimmomatic-0.36/trimmomatic-0.36.jar)  
+hisat2 v2.1.0 (@ PATH)  
+curl 7.47 (also tested with v7.37) (@ PATH)  
+samtools v1.3.1 (@ PATH)  
+mmr default version (@ PATH)  
+deeptools 2.5.3 (@PATH)  
+bedtools v2.26.0 (also tested with v2.21.0) (@ PATH)  
 
-all the prerequisites will be checked before running
-
-
-
-
-
+All the prerequisites will be checked before start the processing.
