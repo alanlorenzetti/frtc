@@ -1,4 +1,4 @@
-# From Raw To Coverage: An automatic pipeline for RNA-Seq Analysis.
+# From Raw To Coverage: An automated pipeline for RNA-Seq Analysis.
 
 ## Purpose and General Info
 
