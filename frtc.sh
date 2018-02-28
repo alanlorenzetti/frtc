@@ -1,14 +1,28 @@
 #!/bin/bash
 
-# version 0.3 alorenzetti 20180228
+# alorenzetti
 # built and tested on Ubuntu 16.04.3 LTS 64bit
 # also tested on Debian GNU/Linux jessie/sid
+
+version=0.3
+lastupdate=20180228
 
 # please, Read The Following Manual before using this script
 # the manual is supplied on README.md or on the end of this file
 
+# starting an if statement to show the help
+# which is presented on the end of the file
+# this if statement only ends on the end of
+# this script
+if [ "$1" != "--help" ] ; then
+
 # showing usage hints if no arguments are supplied
-if [ $# -ne 6 ] ; then echo '
+if [ $# -ne 6 ] ; then echo "
+From Raw To Coverage (frtc):
+A tool to process Illumina RNASeq data.
+Version: $version
+Last update: $lastupdate
+
 Usage:
 
 ./frtc.sh <threads> <maxfragsize> <read_size> <spp> <url>
@@ -16,15 +30,11 @@ Usage:
 e.g.:
 ./frtc.sh 6 1000 150 Hsalinarum ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/006/805/GCF_000006805.1_ASM680v1/GCF_000006805.1_ASM680v1_genomic.fna.gz
 
-for more information run ./frtc.sh --help' && exit 1
+Check the help using: ./frtc.sh --help
+
+" && exit 1
 
 fi
-
-# starting an if statement to show the help
-# which is presented on the end of the file
-# this if statement only ends on the end of
-# this script
-if [ "$1" != "--help" ] ; then
 
 ####################################
 # CUSTOM VARIABLES
