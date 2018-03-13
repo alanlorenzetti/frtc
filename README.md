@@ -32,6 +32,7 @@ start position (@ fiveprime directory)                    R2
 **Warning**  
 
 Be aware this feature doesn't work for dUTP library preparations and be aware that uniq mode is not supported for fiveprime, threeprime and TSSAR input results.  
+---
 
 Furthermore, it will filter bam files in order to keep only the R1 files, for they are useful to find TSS in dRNASeq experiments (e.g. TEXminus vs. TEXplus experiments) the filtered bams are placed within tssarinput directory.  
 
@@ -51,13 +52,13 @@ Those modules (or steps) are summarized below:
 
 ## Usage and Requisites
 
-```{shell}
+```
 frtc.sh <threads> <maxfragsize> <read_size> <spp> <url>
 ```
 
 e.g.:
 
-```{shell}
+```
 frtc.sh 6 1000 150 Hsalinarum ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/006/805/GCF_000006805.1_ASM680v1/GCF_000006805.1_ASM680v1_genomic.fna.gz
 ```
 
