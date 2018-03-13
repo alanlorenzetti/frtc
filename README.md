@@ -32,6 +32,7 @@ start position (@ fiveprime directory)                    R2
 **Warning**  
 
 Be aware this feature doesn't work for dUTP library preparations and be aware that uniq mode is not supported for fiveprime, threeprime and TSSAR input results.  
+
 ---
 
 Furthermore, it will filter bam files in order to keep only the R1 files, for they are useful to find TSS in dRNASeq experiments (e.g. TEXminus vs. TEXplus experiments) the filtered bams are placed within tssarinput directory.  
