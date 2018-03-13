@@ -2,7 +2,7 @@
 
 ## Purpose and General Information
 
-This script will perform every task from trimming Illumina RNA-Seq raw data (fastq files) to write coverage files (bedgraph and IGV files). It also counts the start position of reads and end position if a paired-end experiment is supplied:
+This script will perform every task from trimming Illumina RNA-Seq raw data (fastq.gz files) to write coverage files (bedgraph and IGV files). It also counts the start position of reads and end position if a paired-end experiment is supplied:
 
 ```
 single-end
@@ -71,25 +71,25 @@ yourDirectory
 ├── misc			notProvided
 │   ├── adap.fa			
 └── raw 			notProvided
-    ├── S1_R1.fastq		
-    ├── S1_R2.fastq
-    ├── S2_R1.fastq
-    ├── S2_R2.fastq
-    ├── S3_R1.fastq
-    ├── S3_R2.fastq
-    ├── S4_R1.fastq
-    └── S4_R2.fastq
+    ├── S1_R1.fastq.gz		
+    ├── S1_R2.fastq.gz
+    ├── S2_R1.fastq.gz
+    ├── S2_R2.fastq.gz
+    ├── S3_R1.fastq.gz
+    ├── S3_R2.fastq.gz
+    ├── S4_R1.fastq.gz
+    └── S4_R2.fastq.gz
 ```
 
-Raw file names must be ended with R1 or R2 and must have fastq extension (i.e. uncompressed).  
+Raw file names must be ended with R1 or R2 and must have fastq.gz extension (i.e. gzip compressed).  
 
 If the libraries are paired-end:  
 
-e.g. S1_R1.fastq S1_R2.fastq  
+e.g. S1_R1.fastq.gz S1_R2.fastq.gz  
 
 If the libraries are single-end:  
 
-e.g. S1_R1.fastq  
+e.g. S1_R1.fastq.gz  
 
 **adap.fa** must be a fasta file containing what adapters would look like if they are sequenced. For more information, check https://support.illumina.com/bulletins/2016/12/what-sequences-do-i-use-for-adapter-trimming.html  
 

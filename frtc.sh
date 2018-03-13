@@ -4,7 +4,7 @@
 # built and tested on Ubuntu 16.04.3 LTS 64bit
 # also tested on Debian GNU/Linux jessie/sid
 
-version=0.3.1
+version=0.3.2
 lastupdate=20180313
 
 # please, check the README.md file before using this script
@@ -72,7 +72,7 @@ urlannot=$(echo $url | sed 's/fna.gz/gff.gz/')
 ####################################
 # HARD CODED VARIABLES
 ####################################
-prefixes=`ls raw/*.fastq | sed 's/^raw\///;s/_R[12].*$//' | sort | uniq`
+prefixes=`ls raw/*.fastq.gz | sed 's/^raw\///;s/_R[12].*$//' | sort | uniq`
 rawdir="raw"
 miscdir="misc"
 trimmeddir="trimmed"
@@ -135,14 +135,14 @@ echo "Done!"
 # if used in paired-end mode
 # this step is going to output four files for each library
 # e.g.
-# S1_R1-paired.fastq and its pair S1_R2-paired.fastq
-# S1_R1-unpaired.fastq containing reads R1 that had its R2 eliminated by the trimming (unpaired or orphan R1)
-# S1_R2-unpaired.fastq containgin reads R2 that had its R1 eliminated by the trimming (unpaired or orphan R2)
+# S1_R1-paired.fastq.gz and its pair S1_R2-paired.fastq.gz
+# S1_R1-unpaired.fastq.gz containing reads R1 that had its R2 eliminated by the trimming (unpaired or orphan R1)
+# S1_R2-unpaired.fastq.gz containgin reads R2 that had its R1 eliminated by the trimming (unpaired or orphan R2)
 #
 # if used in single-end mode
 # this step will provide just one file as output
 # e.g.
-# S1_R1-unpaired.fastq
+# S1_R1-unpaired.fastq.gz
 
 if [ ! -d $trimmeddir ] ; then
 	mkdir $trimmeddir
@@ -152,12 +152,12 @@ if [ ! -d $trimmeddir ] ; then
 	if [ "$pairedend" == "y" ] ; then
 		for prefix in $prefixes ; do
 			echo "Trimming $prefix"
-			R1=$rawdir/$prefix"_R1.fastq"
-			R2=$rawdir/$prefix"_R2.fastq"
-			outpairedR1=$trimmeddir/$prefix"-paired_R1.fastq"
-			outpairedR2=$trimmeddir/$prefix"-paired_R2.fastq"
-			outunpairedR1=$trimmeddir/$prefix"-unpaired_R1.fastq"
-			outunpairedR2=$trimmeddir/$prefix"-unpaired_R2.fastq"
+			R1=$rawdir/$prefix"_R1.fastq.gz"
+			R2=$rawdir/$prefix"_R2.fastq.gz"
+			outpairedR1=$trimmeddir/$prefix"-paired_R1.fastq.gz"
+			outpairedR2=$trimmeddir/$prefix"-paired_R2.fastq.gz"
+			outunpairedR1=$trimmeddir/$prefix"-unpaired_R1.fastq.gz"
+			outunpairedR2=$trimmeddir/$prefix"-unpaired_R2.fastq.gz"
 			logfile=$trimmeddir/$prefix".log"
 
 			java -jar /opt/Trimmomatic-0.36/trimmomatic-0.36.jar PE \
@@ -172,8 +172,8 @@ if [ ! -d $trimmeddir ] ; then
 	else
 		for prefix in $prefixes ; do
 			echo "Trimming $prefix"
-			R1=$rawdir/$prefix"_R1.fastq"
-			outunpairedR1=$trimmeddir/$prefix"-unpaired_R1.fastq"
+			R1=$rawdir/$prefix"_R1.fastq.gz"
+			outunpairedR1=$trimmeddir/$prefix"-unpaired_R1.fastq.gz"
 			logfile=$trimmeddir/$prefix".log"
 
 			java -jar /opt/Trimmomatic-0.36/trimmomatic-0.36.jar SE \
@@ -233,8 +233,8 @@ if [ ! -d $samdir ] ; then
 			-X $maxfragsize \
 			-p $threads \
 			-x $miscdir/$spp \
-			-1 $trimmeddir/$prefix"-paired_R1.fastq" \
-			-2 $trimmeddir/$prefix"-paired_R2.fastq" \
+			-1 $trimmeddir/$prefix"-paired_R1.fastq.gz" \
+			-2 $trimmeddir/$prefix"-paired_R2.fastq.gz" \
 			--summary-file $samdir/$prefix"-paired.log" | grep "^@\|YT:Z:CP" > $samdir/$prefix"-paired.sam"
 
 			# aligning unpaired R1
@@ -249,7 +249,7 @@ if [ ! -d $samdir ] ; then
 			-k 1000 \
 			-p $threads \
 			-x $miscdir/$spp \
-			-U $trimmeddir/$prefix"-unpaired_R1.fastq" \
+			-U $trimmeddir/$prefix"-unpaired_R1.fastq.gz" \
 			--summary-file $samdir/$prefix"-unpaired_R1.log" | grep "^@\|YT:Z:UU" > $samdir/$prefix"-unpaired_R1.sam"
 
 			# aligning unpaired R2
@@ -264,7 +264,7 @@ if [ ! -d $samdir ] ; then
 			-k 1000 \
 			-p $threads \
 			-x $miscdir/$spp \
-			-U $trimmeddir/$prefix"-unpaired_R2.fastq" \
+			-U $trimmeddir/$prefix"-unpaired_R2.fastq.gz" \
 			--summary-file $samdir/$prefix"-unpaired_R2.log" | grep "^@\|YT:Z:UU" > $samdir/$prefix"-unpaired_R2.sam"
 
 			samtools view -@ $threads -h $samdir/$prefix"-unpaired_R2.sam" | \
@@ -289,7 +289,7 @@ if [ ! -d $samdir ] ; then
 			-k 1000 \
 			-p $threads \
 			-x $miscdir/$spp \
-			-U $trimmeddir/$prefix"-unpaired_R1.fastq" \
+			-U $trimmeddir/$prefix"-unpaired_R1.fastq.gz" \
 			--summary-file $samdir/$prefix"-unpaired_R1.log" > $samdir/$prefix"-unpaired_R1.sam"
 		done
 	fi
@@ -1111,23 +1111,23 @@ echo '
 # ├── misc					# notProvided
 # │   ├── adap.fa
 # └── raw 					# notProvided
-#     ├── S1_R1.fastq
-#     ├── S1_R2.fastq
-#     ├── S2_R1.fastq
-#     ├── S2_R2.fastq
-#     ├── S3_R1.fastq
-#     ├── S3_R2.fastq
-#     ├── S4_R1.fastq
-#     └── S4_R2.fastq
+#     ├── S1_R1.fastq.gz
+#     ├── S1_R2.fastq.gz
+#     ├── S2_R1.fastq.gz
+#     ├── S2_R2.fastq.gz
+#     ├── S3_R1.fastq.gz
+#     ├── S3_R2.fastq.gz
+#     ├── S4_R1.fastq.gz
+#     └── S4_R2.fastq.gz
 #
 # raw file names must be ended with R1 or R2 and
-# must have fastq extension (i.e. uncompressed)
+# must have fastq.gz extension (i.e. gzip compressed)
 # if the libraries are paired-end
-# e.g. S1_R1.fastq
-#      S1_R2.fastq
+# e.g. S1_R1.fastq.gz
+#      S1_R2.fastq.gz
 #
 # if the libraries are single-end
-# e.g. S1_R1.fastq
+# e.g. S1_R1.fastq.gz
 #
 # adap.fa must be a fasta file containing
 # what adapters would look like if they are sequenced.
