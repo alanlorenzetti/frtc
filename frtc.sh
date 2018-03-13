@@ -425,7 +425,7 @@ fi
 ######################
 # MMR
 ######################
-# MMR will remap the multiple aligned reads
+# MMR will remap the multi aligned reads
 # it will avoid the inflation of reads and
 # allow us to conmpute the read coverage of
 # repetitive regions on the genome
@@ -433,7 +433,7 @@ fi
 if [ ! -d $mmrdir ] ; then
 	mkdir $mmrdir
 
-	echo "Step 5: Adjusting position of multiple aligned reads"
+	echo "Step 5: Adjusting position of multi aligned reads"
 	# we did not check if the files are sorted because they were sorted before
 	# -A is max no of valid pairs before not using pair modus
 	# we want to maximize the number of valid pairs used (i.e. all)
