@@ -4,8 +4,8 @@
 # built and tested on Ubuntu 16.04.3 LTS 64bit
 # also tested on Debian GNU/Linux jessie/sid
 
-version=0.3
-lastupdate=20180228
+version=0.3.1
+lastupdate=20180313
 
 # please, check the README.md file before using this script
 # there is also a version of the manual on the end of this file
@@ -86,6 +86,15 @@ coverageuniqdir="coverage_uniq"
 fiveprimedir="fiveprime"
 threeprimedir="threeprime"
 tssarinputdir="tssarinput"
+
+####################################
+# PROGRAM STAMP
+####################################
+echo "From Raw To Coverage (frtc):
+A tool to process Illumina RNASeq data.
+Version: $version
+Last update: $lastupdate
+"
 
 ####################################
 # CHECKING DEPENDENCIES
