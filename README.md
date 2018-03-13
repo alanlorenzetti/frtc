@@ -6,6 +6,11 @@ This script will perform every task from trimming Illumina RNA-Seq raw data (fas
 
 ```
 single-end
+
+                     RNA FRAGMENT (INSERT)
+5prime                                                3prime
+------------------------------------------------------------
+
                    end position (@ threeprime directory; only meaningful in a few cases; use with caution)
 R1                 |
 ------------------->
@@ -13,6 +18,7 @@ R1                 |
 start position (@ fiveprime directory)
 
 paired-end
+
                      RNA FRAGMENT (INSERT)
 5prime                                                3prime
 ------------------------------------------------------------

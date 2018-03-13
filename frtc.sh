@@ -18,7 +18,7 @@ lastupdate=20180228
 if [ "$1" != "--help" ] ; then
 
 # showing usage hints if no arguments are supplied
-if [ $# -ne 6 ] ; then echo "
+if [ $# -ne 5 ] ; then echo "
 From Raw To Coverage (frtc):
 A tool to process Illumina RNASeq data.
 Version: $version
