@@ -4,8 +4,8 @@
 # built and tested on Ubuntu 16.04.3 LTS 64bit
 # also tested on Debian GNU/Linux jessie/sid
 
-version=0.3.2
-lastupdate=20180313
+version=0.3.3
+lastupdate=20180319
 
 # please, check the README.md file before using this script
 # there is also a version of the manual on the end of this file
