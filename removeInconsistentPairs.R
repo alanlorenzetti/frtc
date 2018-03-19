@@ -1,4 +1,4 @@
-# alorenzetti 20180223
+# alorenzetti 20180319
 # this script will remove paired-end reads that
 # make no sense after being remapped by MMR
 # we detected a bug in this application (MMR)
@@ -72,41 +72,48 @@ while(!is.null(align1)){
   refidAlign2 = refID(align2)
   
   name1eqname2 = name(align1) == name(align2) #; namenotequal = namenotequal + !name1eqname2
-  pos1eqmpos2 = position(align1) == matePosition(align2) #; pos1notequalmpos2 = pos1notequalmpos2 + !pos1eqmpos2
-  mpos1eqpos2 = position(align2) == matePosition(align1) #; pos2notequalmpos1 = pos2notequalmpos1 + !mpos1eqpos2
-  
-  if(position(align1) < position(align2)){
-    insertlen1 = position(align2) + nchar(alignSeq(align2)) - position(align1)
-    insertlen2 = insertlen1 * -1
-  } else if(position(align1) > position(align2)){
-    insertlen1 = (position(align1) + nchar(alignSeq(align1)) - position(align2)) * -1
-    insertlen2 = insertlen1 * -1
+
+  if(name1eqname2){
+
+	  pos1eqmpos2 = position(align1) == matePosition(align2) #; pos1notequalmpos2 = pos1notequalmpos2 + !pos1eqmpos2
+	  mpos1eqpos2 = position(align2) == matePosition(align1) #; pos2notequalmpos1 = pos2notequalmpos1 + !mpos1eqpos2
+	  
+	  if(position(align1) < position(align2)){
+	    insertlen1 = position(align2) + nchar(alignSeq(align2)) - position(align1)
+	    insertlen2 = insertlen1 * -1
+	  } else if(position(align1) > position(align2)){
+	    insertlen1 = (position(align1) + nchar(alignSeq(align1)) - position(align2)) * -1
+	    insertlen2 = insertlen1 * -1
+	  } else {
+	    if(nchar(alignSeq(align1)) < nchar(alignSeq(align2))){
+	      insertlen1 = nchar(alignSeq(align2))
+	      insertlen2 = insertlen1 * -1
+	    } else if(nchar(alignSeq(align1)) > nchar(alignSeq(align2))){
+	      insertlen1 = nchar(alignSeq(align1)) * -1
+	      insertlen2 = insertlen1 * -1
+	    } else {
+	      insertlen1 = nchar(alignSeq(align1)) * -1
+	      insertlen2 = insertlen1
+	    }
+	  }
+	  
+	  insertlengthok1 = insertlen1 == insertSize(align1) #; insertlength1notok = insertlength1notok + !insertlengthok1
+	  insertlengthok2 = insertlen2 == insertSize(align2) #; insertlength2notok = insertlength2notok + !insertlengthok2
+	  
+	  if((name1eqname2 & pos1eqmpos2 & mpos1eqpos2 & insertlengthok1 & insertlengthok2) == T){
+	    bamSave(object = writer, value = align1, refid = refidAlign1)
+	    bamSave(object = writer, value = align2, refid = refidAlign2)
+	  } else {
+	    ntotal = ntotal + 1
+	    bamSave(object = fail, value = align1, refid = refidAlign1)
+	    bamSave(object = fail, value = align2, refid = refidAlign2)
+	  }
+
+    align1 = getNextAlign(bamnsorted)
+
   } else {
-    if(nchar(alignSeq(align1)) < nchar(alignSeq(align2))){
-      insertlen1 = nchar(alignSeq(align2))
-      insertlen2 = insertlen1 * -1
-    } else if(nchar(alignSeq(align1)) > nchar(alignSeq(align2))){
-      insertlen1 = nchar(alignSeq(align1)) * -1
-      insertlen2 = insertlen1 * -1
-    } else {
-      insertlen1 = nchar(alignSeq(align1)) * -1
-      insertlen2 = insertlen1
-    }
+    align1 = align2
   }
-  
-  insertlengthok1 = insertlen1 == insertSize(align1) #; insertlength1notok = insertlength1notok + !insertlengthok1
-  insertlengthok2 = insertlen2 == insertSize(align2) #; insertlength2notok = insertlength2notok + !insertlengthok2
-  
-  if((name1eqname2 & pos1eqmpos2 & mpos1eqpos2 & insertlengthok1 & insertlengthok2) == T){
-    bamSave(object = writer, value = align1, refid = refidAlign1)
-    bamSave(object = writer, value = align2, refid = refidAlign2)
-  } else {
-    ntotal = ntotal + 1
-    bamSave(object = fail, value = align1, refid = refidAlign1)
-    bamSave(object = fail, value = align2, refid = refidAlign2)
-  }
-  
-  align1 = getNextAlign(bamnsorted)
 }
 
 # closing bamfile
