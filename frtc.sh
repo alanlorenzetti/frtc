@@ -93,12 +93,13 @@ tssarinputdir="tssarinput"
 echo "From Raw To Coverage (frtc):
 A tool to process Illumina RNASeq data.
 Version: $version
-Last update: $lastupdate
-"
+Last update: $lastupdate"
 
 ####################################
-# CALL
+# CALL AND DATE
 ####################################
+dateAndTime=`date`
+echo "DateAndTime: $dateAndTime"
 echo "Call: $0 $@"
 
 ####################################
