@@ -115,3 +115,10 @@ deeptools 2.5.3 (@PATH)
 bedtools v2.26.0 (also tested with v2.21.0) (@ PATH)  
 
 All the prerequisites will be checked before start the processing.
+
+```
+   __o
+ _ \<_
+(_)/(_)
+```
+
