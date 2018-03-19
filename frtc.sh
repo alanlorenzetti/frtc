@@ -99,7 +99,7 @@ Last update: $lastupdate"
 # CALL AND DATE
 ####################################
 dateAndTime=`date`
-echo "DateAndTime: $dateAndTime"
+echo "$dateAndTime"
 echo "Call: $0 $@"
 
 ####################################
