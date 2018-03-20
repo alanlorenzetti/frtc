@@ -66,13 +66,10 @@ rewind(bamnsorted)
 align1 = getNextAlign(bamnsorted)
 
 while(!is.null(align1)){
-  refidAlign1 = refID(align1)
-  
-  align2 = getNextAlign(bamnsorted)
-  refidAlign2 = refID(align2)
-  
-  name1eqname2 = name(align1) == name(align2) #; namenotequal = namenotequal + !name1eqname2
 
+  align2 = getNextAlign(bamnsorted)
+  name1eqname2 = name(align1) == name(align2) #; namenotequal = namenotequal + !name1eqname2
+  
   if(name1eqname2){
 
 	  pos1eqmpos2 = position(align1) == matePosition(align2) #; pos1notequalmpos2 = pos1notequalmpos2 + !pos1eqmpos2
@@ -101,12 +98,12 @@ while(!is.null(align1)){
 	  insertlengthok2 = insertlen2 == insertSize(align2) #; insertlength2notok = insertlength2notok + !insertlengthok2
 	  
 	  if((name1eqname2 & pos1eqmpos2 & mpos1eqpos2 & insertlengthok1 & insertlengthok2) == T){
-	    bamSave(object = writer, value = align1, refid = refidAlign1)
-	    bamSave(object = writer, value = align2, refid = refidAlign2)
+	    bamSave(object = writer, value = align1, refid = refID(align1))
+	    bamSave(object = writer, value = align2, refid = refID(align2))
 	  } else {
 	    ntotal = ntotal + 1
-	    bamSave(object = fail, value = align1, refid = refidAlign1)
-	    bamSave(object = fail, value = align2, refid = refidAlign2)
+	    bamSave(object = fail, value = align1, refid = refID(align1))
+	    bamSave(object = fail, value = align2, refid = refID(align2))
 	  }
 
     align1 = getNextAlign(bamnsorted)
@@ -114,6 +111,7 @@ while(!is.null(align1)){
   } else {
     align1 = align2
   }
+  
 }
 
 # closing bamfile
