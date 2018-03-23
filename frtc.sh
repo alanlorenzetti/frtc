@@ -4,8 +4,8 @@
 # built and tested on Ubuntu 16.04.3 LTS 64bit
 # also tested on Debian GNU/Linux jessie/sid
 
-version=0.3.3
-lastupdate=20180319
+version=0.3.4
+lastupdate=20180323
 
 # please, check the README.md file before using this script
 # there is also a version of the manual on the end of this file
@@ -86,6 +86,18 @@ coverageuniqdir="coverage_uniq"
 fiveprimedir="fiveprime"
 threeprimedir="threeprime"
 tssarinputdir="tssarinput"
+
+# if the output must be normalized
+# the pipeline will create coverage,
+# coverage_uniq, fiveprime and threeprime
+# directories with the suffix _norm
+
+if [ "$normalize" == "y" ] ; then
+	coveragedir="coverage_norm"
+	coverageuniqdir="coverage_uniq_norm"
+	fiveprimedir="fiveprime_norm"
+	threeprimedir="threeprime_norm"
+fi
 
 ####################################
 # PROGRAM STAMP
