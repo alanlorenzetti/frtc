@@ -20,7 +20,7 @@ if [ "$1" != "--help" ] ; then
 # showing usage hints if no arguments are supplied
 if [ $# -ne 5 ] ; then echo "
 From Raw To Coverage (frtc):
-A tool to process Illumina RNASeq data.
+A tool to process Illumina RNA-Seq data.
 Version: $version
 Last update: $lastupdate
 
@@ -893,7 +893,9 @@ fi
 if [ ! -d $tssarinputdir ] ; then
 	mkdir $tssarinputdir
 
-	echo "Step 7: Creating TSSar input files"
+	echo "Step 7: Creating TSSAR input files"
+
+	replicons=`grep ">" $miscdir/$spp".fa" | sed 's/^>//;s/ .*$//'`
 
 	if [ "$pairedend" == "y" ] ; then
 		for prefix in $prefixes ; do
@@ -913,6 +915,12 @@ if [ ! -d $tssarinputdir ] ; then
 			$tssarinputdir/$prefix"-paired-R1.bam" \
 			$tssarinputdir/$prefix"-unpaired-R1-flag0.bam" \
 			$tssarinputdir/$prefix"-unpaired-R1-flag16.bam" 2> /dev/null
+
+			for replicon in $replicons ; do
+				samtools view -@ $threads -h $tssarinputdir/$prefix"-tssar-input.bam" | \
+				grep "^@HD	VN:1.0	SO:coordinate\|^@SQ	SN:$replicon\|^@PG	ID:hisat2	PN:hisat2\|	$replicon	" | \
+				samtools view -@ $threads -b > $tssarinputdir/$prefix"-tssar-input-"$replicon".bam"
+			done
 		done
 	else
 		for prefix in $prefixes ; do
@@ -929,6 +937,12 @@ if [ ! -d $tssarinputdir ] ; then
 			$tssarinputdir/$prefix"-tssar-input.bam" \
 			$tssarinputdir/$prefix"-unpaired-R1-flag0.bam" \
 			$tssarinputdir/$prefix"-unpaired-R1-flag16.bam" 2> /dev/null
+
+			for replicon in $replicons ; do
+				samtools view -@ $threads -h $tssarinputdir/$prefix"-tssar-input.bam" | \
+				grep "^@HD	VN:1.0	SO:coordinate\|^@SQ	SN:$replicon\|^@PG	ID:hisat2	PN:hisat2\|	$replicon	" | \
+				samtools view -@ $threads -b > $tssarinputdir/$prefix"-tssar-input-"$replicon".bam"
+			done
 		done
 	fi
 
