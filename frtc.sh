@@ -1136,7 +1136,7 @@ echo '
 # ├── removeInconsistentPairs.R			# provided
 # ├── frtc.sh					# provided
 # ├── misc					# notProvided
-# │   ├── adap.fa
+# │   └── adap.fa
 # └── raw 					# notProvided
 #     ├── S1_R1.fastq.gz
 #     ├── S1_R2.fastq.gz
@@ -1174,10 +1174,10 @@ echo '
 #
 # trimmomatic v0.36 (must be located @ /opt/Trimmomatic-0.36/trimmomatic-0.36.jar)
 # hisat2 v2.1.0 (@ PATH)
-# curl 7.47 (also tested with v7.37) (@ PATH)
+# curl v7.47 (also tested with v7.37) (@ PATH)
 # samtools v1.3.1 (@ PATH)
 # mmr default version (@ PATH)
-# deeptools 2.5.3 (@PATH)
+# deeptools v2.5.3 (@PATH)
 # bedtools v2.26.0 (also tested with v2.21.0) (@ PATH)
 #
 # all the prerequisites will be checked before running
