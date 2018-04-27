@@ -538,11 +538,11 @@ if [ ! -d $coveragedir ] ; then
 
 	echo "Step 6.1: Creating coverage files"
 
-	if [ ! -f $miscdir/correctionFactors.txt ] ; then
-		touch $miscdir/correctionFactors.txt
+	if [ ! -f $miscdir/readCounts.txt ] ; then
+		touch $miscdir/readCounts.txt
 	else
-		rm $miscdir/correctionFactors.txt
-		touch $miscdir/correctionFactors.txt
+		rm $miscdir/readCounts.txt
+		touch $miscdir/readCounts.txt
 	fi
 
 	if [ "$pairedend" == "y" ] ; then
@@ -573,10 +573,10 @@ if [ ! -d $coveragedir ] ; then
 			unpairedReadsAligned=`samtools view -@ $threads $coveragedir/$prefix"-unpaired.bam" | wc -l`
 			totalAligned=`echo "$pairsAligned + $unpairedReadsAligned" | bc`
 
-			printf "$prefix\t$totalAligned\n" >> $miscdir/correctionFactors.txt
+			printf "$prefix\t$totalAligned\n" >> $miscdir/readCounts.txt
 		done
 
-		maxTotalAligned=`awk -v FS="\t" -v OFS="\t" -v max=0 '{if($2 > max){max=$2}}END{print max}' $miscdir/correctionFactors.txt`
+		maxTotalAligned=`awk -v FS="\t" -v OFS="\t" -v max=0 '{if($2 > max){max=$2}}END{print max}' $miscdir/readCounts.txt`
 
 		while IFS="	" read prefix totalAligned ; do
 
@@ -648,7 +648,7 @@ if [ ! -d $coveragedir ] ; then
 			awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor -v prefix=$prefix \
 			'{print $1,$2+1,$3,prefix"-rev",(($4/2)+$5)*correctionFactor}' > $coveragedir/$prefix"-rev.igv"
 
-		done < $miscdir/correctionFactors.txt
+		done < $miscdir/readCounts.txt
 	else
 		for prefix in $prefixes ; do
 			samtools view -@ $threads -h $mmrdir/$prefix"-sorted.bam" | \
@@ -659,10 +659,10 @@ if [ ! -d $coveragedir ] ; then
 
 			totalAligned=`samtools view -@ $threads $coveragedir/$prefix"-unpaired.bam" | wc -l`
 
-			printf "$prefix\t$totalAligned\n" >> $miscdir/correctionFactors.txt
+			printf "$prefix\t$totalAligned\n" >> $miscdir/readCounts.txt
 		done
 
-		maxTotalAligned=`awk -v FS="\t" -v OFS="\t" -v max=0 '{if($2 > max){max=$2}}END{print max}' $miscdir/correctionFactors.txt`
+		maxTotalAligned=`awk -v FS="\t" -v OFS="\t" -v max=0 '{if($2 > max){max=$2}}END{print max}' $miscdir/readCounts.txt`
 
 		while IFS="	" read prefix totalAligned ; do
 
@@ -702,7 +702,7 @@ if [ ! -d $coveragedir ] ; then
 
 			rm $coveragedir/*.tmp
 
-		done < $miscdir/correctionFactors.txt
+		done < $miscdir/readCounts.txt
 	fi
 
 	echo "Done!"
@@ -720,11 +720,11 @@ if [ "$uniqaln" == "y" ] ; then
 	if [ ! -d $coverageuniqdir ] ; then
 		mkdir $coverageuniqdir
 
-		if [ ! -f $miscdir/correctionFactorsUniq.txt ] ; then
-			touch $miscdir/correctionFactorsUniq.txt
+		if [ ! -f $miscdir/readCountsUniq.txt ] ; then
+			touch $miscdir/readCountsUniq.txt
 		else
-			rm $miscdir/correctionFactorsUniq.txt
-			touch $miscdir/correctionFactorsUniq.txt
+			rm $miscdir/readCountsUniq.txt
+			touch $miscdir/readCountsUniq.txt
 		fi
 
 		echo "Step 6.2: Creating coverage files for uniquely aligned reads"
@@ -747,10 +747,10 @@ if [ "$uniqaln" == "y" ] ; then
 				unpairedReadsAligned=`samtools view -@ $threads $coverageuniqdir/$prefix"-unpaired.bam" | wc -l`
 				totalAligned=`echo "$pairsAligned + $unpairedReadsAligned" | bc`
 
-				printf "$prefix\t$totalAligned\n" >> $miscdir/correctionFactorsUniq.txt
+				printf "$prefix\t$totalAligned\n" >> $miscdir/readCountsUniq.txt
 			done
 
-			maxTotalAligned=`awk -v FS="\t" -v OFS="\t" -v max=0 '{if($2 > max){max=$2}}END{print max}' $miscdir/correctionFactorsUniq.txt`
+			maxTotalAligned=`awk -v FS="\t" -v OFS="\t" -v max=0 '{if($2 > max){max=$2}}END{print max}' $miscdir/readCountsUniq.txt`
 
 			while IFS="	" read prefix totalAligned ; do
 
@@ -822,7 +822,7 @@ if [ "$uniqaln" == "y" ] ; then
 				awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor -v prefix=$prefix \
 				'{print $1,$2+1,$3,prefix"-rev",(($4/2)+$5)*correctionFactor}' > $coverageuniqdir/$prefix"-rev.igv"
 
-			done < $miscdir/correctionFactorsUniq.txt
+			done < $miscdir/readCountsUniq.txt
 		else
 			for prefix in $prefixes ; do
 				samtools view -@ $threads -h $bamuniqdir/$prefix"-sorted.bam" | \
@@ -833,10 +833,10 @@ if [ "$uniqaln" == "y" ] ; then
 
 				totalAligned=`samtools view -@ $threads $coverageuniqdir/$prefix"-unpaired.bam" | wc -l`
 
-				printf "$prefix\t$totalAligned\n" >> $miscdir/correctionFactorsUniq.txt
+				printf "$prefix\t$totalAligned\n" >> $miscdir/readCountsUniq.txt
 			done
 
-			maxTotalAligned=`awk -v FS="\t" -v OFS="\t" -v max=0 '{if($2 > max){max=$2}}END{print max}' $miscdir/correctionFactorsUniq.txt`
+			maxTotalAligned=`awk -v FS="\t" -v OFS="\t" -v max=0 '{if($2 > max){max=$2}}END{print max}' $miscdir/readCountsUniq.txt`
 
 			while IFS="	" read prefix totalAligned ; do
 				if [ "$normalize" == "y" ]; then
@@ -875,7 +875,7 @@ if [ "$uniqaln" == "y" ] ; then
 
 			rm $coverageuniqdir/*.tmp
 
-			done < $miscdir/correctionFactorsUniq.txt
+			done < $miscdir/readCountsUniq.txt
 		fi
 
 		echo "Done!"
@@ -972,7 +972,7 @@ if [ ! -d $fiveprimedir ] ; then
 			bedtools genomecov -5 -strand - -bga -ibam $tssarinputdir/$prefix"-unpaired-R1-flag16.bam" > $fiveprimedir/$prefix"-5primeprofile-unpaired-rev.bedgraph"
 		done
 
-		maxTotalAligned=`awk -v FS="\t" -v OFS="\t" -v max=0 '{if($2 > max){max=$2}}END{print max}' $miscdir/correctionFactors.txt`
+		maxTotalAligned=`awk -v FS="\t" -v OFS="\t" -v max=0 '{if($2 > max){max=$2}}END{print max}' $miscdir/readCounts.txt`
 
 		while IFS="	" read prefix totalAligned ; do
 
@@ -996,10 +996,10 @@ if [ ! -d $fiveprimedir ] ; then
 			awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor \
 			'{print $1,$2,$3,($4+$5)*correctionFactor}' > $fiveprimedir/$prefix"-5primeprofile-rev.bedgraph"
 
-		done < $miscdir/correctionFactors.txt
+		done < $miscdir/readCounts.txt
 
 	else
-		maxTotalAligned=`awk -v FS="\t" -v OFS="\t" -v max=0 '{if($2 > max){max=$2}}END{print max}' $miscdir/correctionFactors.txt`
+		maxTotalAligned=`awk -v FS="\t" -v OFS="\t" -v max=0 '{if($2 > max){max=$2}}END{print max}' $miscdir/readCounts.txt`
 
 		while IFS="	" read prefix totalAligned ; do
 
@@ -1017,7 +1017,7 @@ if [ ! -d $fiveprimedir ] ; then
 			awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor \
 			'{print $1,$2,$3,$4*correctionFactor}' > $fiveprimedir/$prefix"-5primeprofile-rev.bedgraph"
 
-		done < $miscdir/correctionFactors.txt
+		done < $miscdir/readCounts.txt
 	fi
 
 	echo "Done!"
@@ -1057,7 +1057,7 @@ if [ ! -d $threeprimedir ] ; then
 			bedtools genomecov -3 -strand - -bga -ibam stdin > $threeprimedir/$prefix"-3primeprofile-unpaired-rev.bedgraph"
 		done
 
-		maxTotalAligned=`awk -v FS="\t" -v OFS="\t" -v max=0 '{if($2 > max){max=$2}}END{print max}' $miscdir/correctionFactors.txt`
+		maxTotalAligned=`awk -v FS="\t" -v OFS="\t" -v max=0 '{if($2 > max){max=$2}}END{print max}' $miscdir/readCounts.txt`
 
 		while IFS="	" read prefix totalAligned ; do
 
@@ -1081,10 +1081,10 @@ if [ ! -d $threeprimedir ] ; then
 			awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor \
 			'{print $1,$2,$3,($4+$5)*correctionFactor}' > $threeprimedir/$prefix"-3primeprofile-rev.bedgraph"
 
-		done < $miscdir/correctionFactors.txt
+		done < $miscdir/readCounts.txt
 	else
 
-		maxTotalAligned=`awk -v FS="\t" -v OFS="\t" -v max=0 '{if($2 > max){max=$2}}END{print max}' $miscdir/correctionFactors.txt`
+		maxTotalAligned=`awk -v FS="\t" -v OFS="\t" -v max=0 '{if($2 > max){max=$2}}END{print max}' $miscdir/readCounts.txt`
 
 		while IFS="	" read prefix totalAligned ; do
 
@@ -1108,7 +1108,7 @@ if [ ! -d $threeprimedir ] ; then
 			awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor \
 			'{print $1,$2,$3,$4*correctionFactor}' > $threeprimedir/$prefix"-3primeprofile-unpaired-rev.bedgraph"
 
-		done < $miscdir/correctionFactors.txt
+		done < $miscdir/readCounts.txt
 	fi
 
 	echo "Done!"
