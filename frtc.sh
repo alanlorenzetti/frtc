@@ -4,8 +4,8 @@
 # built and tested on Ubuntu 16.04.3 LTS 64bit
 # also tested on Debian GNU/Linux jessie/sid
 
-version=0.3.5
-lastupdate=20180326
+version=0.4
+lastupdate=20180605
 
 # please, check the README.md file before using this script
 # there is also a version of the manual on the end of this file
@@ -1095,14 +1095,14 @@ if [ ! -d $threeprimedir ] ; then
                         fi
 
 			samtools view -@ $threads -h -F 0x10 $coveragedir/$prefix"-unpaired.bam" | \
-			awk -v OFS="\t" -v FS="\t" '{if(/^@/){print}else{if($1 ~ /_R2$/){print}}}' | grep "^@\|XS:A:+" | \
+			grep "^@\|XS:A:+" | \
 			samtools view -@ $threads -h -b | \
 			bedtools genomecov -3 -strand + -bga -ibam stdin | \
 			awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor \
 			'{print $1,$2,$3,$4*correctionFactor}' > $threeprimedir/$prefix"-3primeprofile-unpaired-fwd.bedgraph"
 
 			samtools view -@ $threads -h -f 0x10 $coveragedir/$prefix"-unpaired.bam" | \
-			awk -v OFS="\t" -v FS="\t" '{if(/^@/){print}else{if($1 ~ /_R2$/){print}}}' | grep "^@\|XS:A:-" | \
+			grep "^@\|XS:A:-" | \
 			samtools view -@ $threads -h -b | \
 			bedtools genomecov -3 -strand - -bga -ibam stdin | \
 			awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor \
