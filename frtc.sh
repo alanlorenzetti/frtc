@@ -440,7 +440,7 @@ fi
 ######################
 # MMR will remap the multi aligned reads
 # it will avoid the inflation of reads and
-# allow us to conmpute the read coverage of
+# allow us to compute the read coverage of
 # repetitive regions on the genome
 
 if [ ! -d $mmrdir ] ; then
