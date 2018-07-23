@@ -93,6 +93,8 @@ If the libraries are single-end:
 
 e.g. S1_R1.fastq.gz  
 
+Single-end or paired-end mode can be set in frtc.sh. This script was written using paired-end as default mode but you are able to change to single-end mode by setting **pairedend="n"** on **"CUSTOM VARIABLES"** section.
+
 **adap.fa** must be a fasta file containing what adapters would look like if they are sequenced. For more information, check https://support.illumina.com/bulletins/2016/12/what-sequences-do-i-use-for-adapter-trimming.html  
 
 The file must look like:  

@@ -4,8 +4,8 @@
 # built and tested on Ubuntu 16.04.3 LTS 64bit
 # also tested on Debian GNU/Linux jessie/sid
 
-version=0.4
-lastupdate=20180605
+version=0.4.1
+lastupdate=20180723
 
 # please, check the README.md file before using this script
 # there is also a version of the manual on the end of this file
@@ -1155,6 +1155,11 @@ echo '
 #
 # if the libraries are single-end
 # e.g. S1_R1.fastq.gz
+#
+# single-end or paired-end mode can be set in frtc.sh.
+# this script was written using paired-end as default mode
+# but you are able to change to single-end mode by setting
+# pairedend="n" on "CUSTOM VARIABLES" section.
 #
 # adap.fa must be a fasta file containing
 # what adapters would look like if they are sequenced.
