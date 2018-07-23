@@ -1127,8 +1127,6 @@ echo '
 # e.g.:
 # ./frtc.sh 6 1000 150 Hsalinarum ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/006/805/GCF_000006805.1_ASM680v1/GCF_000006805.1_ASM680v1_genomic.fna.gz
 #
-# for more information run ./frtc.sh --help
-#
 # there is a directory tree prerequisite to run frtc.
 # an adequate directory tree to run frtc must look like
 #
