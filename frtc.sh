@@ -4,8 +4,8 @@
 # built and tested on Ubuntu 16.04.3 LTS 64bit
 # also tested on Debian GNU/Linux jessie/sid
 
-version=0.4.1
-lastupdate=20180723
+version=0.4.2
+lastupdate=20180803
 
 # please, check the README.md file before using this script
 # there is also a version of the manual on the end of this file
@@ -1177,10 +1177,10 @@ echo '
 #
 # trimmomatic v0.36 (must be located @ /opt/Trimmomatic-0.36/trimmomatic-0.36.jar)
 # hisat2 v2.1.0 (@ PATH)
-# curl v7.47 (also tested with v7.37) (@ PATH)
-# samtools v1.3.1 (@ PATH)
+# curl v7.58.0 (@ PATH)
+# samtools v1.7 (@ PATH)
 # mmr default version (@ PATH)
-# deeptools v2.5.3 (@PATH)
+# deeptools v3.1.1 (@PATH)
 # bedtools v2.26.0 (also tested with v2.21.0) (@ PATH)
 #
 # all the prerequisites will be checked before running
