@@ -95,7 +95,7 @@ e.g. S1_R1.fastq.gz
 
 Single-end or paired-end mode can be set in frtc.sh. This script was written using paired-end as default mode but you are able to change to single-end mode by setting **pairedend="n"** on **"CUSTOM VARIABLES"** section.
 
-Also, if you are processing paired-end libraries, check if R1 and R2 corresponding reads have the same name. For example, if the first entry in R1 file has the header "@SRR9999999.1", the first entry in R2 file must have the same header "@SRR9999999.1". Everything should be the same before the first space character. NCBI SRA commonly provides files that presents headers like "@SRR9999999.1.1" for R1 and "@SRR9999999.1.2" for R2, which may cause problems during the multi-mapper resolution step of this pipeline.
+Also, if you are processing paired-end libraries, check if R1 and R2 corresponding reads have the same name. For example, if the first entry in R1 file has the header "@SRR9999999.1", the first entry in R2 file must have the same header "@SRR9999999.1". Everything should be the same before the first space character. NCBI SRA commonly provides files that present headers like "@SRR9999999.1.1" for R1 and "@SRR9999999.1.2" for R2, which may cause problems during the multi-mapper resolution step of this pipeline.
 
 **adap.fa** must be a fasta file containing what adapters would look like if they are sequenced. For more information, check https://support.illumina.com/bulletins/2016/12/what-sequences-do-i-use-for-adapter-trimming.html  
 

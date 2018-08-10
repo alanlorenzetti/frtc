@@ -2,10 +2,10 @@
 
 # alorenzetti
 # built and tested on Ubuntu 16.04.3 LTS 64bit
-# also tested on Debian GNU/Linux jessie/sid
+# also tested on Debian GNU/Linux jessie/sid and Ubuntu 18.04.1
 
-version=0.4.2
-lastupdate=20180803
+version=0.4.3
+lastupdate=20180810
 
 # please, check the README.md file before using this script
 # there is also a version of the manual on the end of this file
@@ -1164,7 +1164,7 @@ echo '
 # if the first entry in R1 file has the header "@SRR9999999.1",
 # the first entry in R2 file must have the same header "@SRR9999999.1".
 # Everything should be the same before the first space character.
-# NCBI SRA commonly provides files that presents headers like "@SRR9999999.1.1"
+# NCBI SRA commonly provides files that present headers like "@SRR9999999.1.1"
 # for R1 and "@SRR9999999.1.2" for R2, which may cause problems during
 # the multi-mapper resolution step of this pipeline.
 #
