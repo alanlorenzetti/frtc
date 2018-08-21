@@ -54,14 +54,32 @@ Those modules (or steps) are summarized below:
 ## Usage and Requisites
 
 ```
-frtc.sh <threads> <maxfragsize> <read_size> <spp> <url>
+bash frtc.sh <threads> <maxfragsize> <read_size> <spp> <url>
+
+threads [INT]:     number of threads to be passed to nested programs
+
+maxfragsize [INT]: maximum insert size from the leftmost end to
+                   the rightmost of an paired-end alignment.
+                   This parameter is ignored if single-end libraries
+                   are being processed.
+
+read_size [INT]:   approximate size of reads. For an Illumina paired-end
+                   experiment of 150x2 cycles, use 150.
+
+spp [CHAR]:        prefix for genome and annotation files
+
+url [CHAR]:        URL pointing to the genome file in NCBI RefSeq FTP Server.
+                   One may find the link for RefSeq directory on the top right
+                   corner of the NCBI Assembly page for a given genome.
 ```
 
 e.g.:
 
 ```
-frtc.sh 6 1000 150 Hsalinarum ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/006/805/GCF_000006805.1_ASM680v1/GCF_000006805.1_ASM680v1_genomic.fna.gz
+bash frtc.sh 6 1000 150 Hsalinarum ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/006/805/GCF_000006805.1_ASM680v1/GCF_000006805.1_ASM680v1_genomic.fna.gz
 ```
+
+This command line will run frtc.sh with six threads, with a maximum insert size of 1000, with read size of 150 nt, creating Hsalinarum.fa and Hsalinarum.gff files under misc directory to store genome and annotation, respectively.  
 
 There is a directory tree prerequisite to run frtc and you have to create it.  
 An adequate directory tree to run frtc must look like:

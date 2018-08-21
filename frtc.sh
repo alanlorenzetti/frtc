@@ -4,8 +4,8 @@
 # built and tested on Ubuntu 16.04.3 LTS 64bit
 # also tested on Debian GNU/Linux jessie/sid and Ubuntu 18.04.1
 
-version=0.4.3
-lastupdate=20180810
+version=0.4.4
+lastupdate=20180821
 
 # please, check the README.md file before using this script
 # there is also a version of the manual on the end of this file
@@ -26,12 +26,33 @@ Last update: $lastupdate
 
 Usage:
 
-./frtc.sh <threads> <maxfragsize> <read_size> <spp> <url>
+bash frtc.sh <threads> <maxfragsize> <read_size> <spp> <url>
+
+threads [INT]:     number of threads to be passed to nested programs
+
+maxfragsize [INT]: maximum insert size from the leftmost end to
+                   the rightmost of an paired-end alignment.
+                   This parameter is ignored if single-end libraries
+                   are being processed.
+
+read_size [INT]:   approximate size of reads. For an Illumina paired-end
+                   experiment of 150x2 cycles, use 150.
+
+spp [CHAR]:        prefix for genome and annotation files
+
+url [CHAR]:        URL pointing to the genome file in NCBI RefSeq FTP Server.
+                   One may find the link for RefSeq directory on the top right
+                   corner of the NCBI Assembly page for a given genome.
 
 e.g.:
-./frtc.sh 6 1000 150 Hsalinarum ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/006/805/GCF_000006805.1_ASM680v1/GCF_000006805.1_ASM680v1_genomic.fna.gz
+bash frtc.sh 6 1000 150 Hsalinarum ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/006/805/GCF_000006805.1_ASM680v1/GCF_000006805.1_ASM680v1_genomic.fna.gz
 
-Check the help using: ./frtc.sh --help
+this command line will run frtc.sh with six threads,
+with a maximum insert size of 1000, with read size of 150 nt,
+creating Hsalinarum.fa and Hsalinarum.gff files under misc
+directory to store genome and annotation, respectively.
+
+Check the extended documentation using: ./frtc.sh --help
 
 " && exit 1
 
@@ -509,7 +530,7 @@ fi
 # for example: it reports 2 counts for each infered insert
 # in this way, we divide by 2 the counts for paired-end coverage
 #
-# this disencourage us to use gapped or softclipped alignments
+# this discouraje us to use gapped or softclipped alignments
 # because deeptools also attribute different values to regions of gap and softclip
 # and after dividing by two, it will present non-integer values
 #
@@ -525,13 +546,14 @@ fi
 # the highest number of alignments* by the total number of alignments
 # of the *library that is subject to correction*.
 #
-# in this step we also execute a Rscript (removeInconsistentPairs.R) to read BAM files and remove
-# entries of paired-end alignments that lack consistency after being
-# remapped by MMR. If the original RNA in the sample is too small,
-# and align to direct repeats on the genome, MMR may not report
-# them as a little fragment, but rather an artificial big fragment.
-# paired-reads constituting this artificial fragment may lack
-# accordance with their mates and therefore trick deepTools
+# in this step we also execute a Rscript (removeInconsistentPairs.R)
+# to read BAM files and remove entries of paired-end alignments that
+# lack consistency after being remapped by MMR. If the original RNA
+# in the sample is too small and align to direct repeats on the genome,
+# MMR may not report them properly, and the downstream tools like
+# deepTools might not work as expected for these particular cases.
+# a brief explanation of this MMR issue can be checked at
+# https://github.com/ratschlab/mmr/issues/5
 
 if [ ! -d $coveragedir ] ; then
 	mkdir $coveragedir
@@ -1121,135 +1143,156 @@ echo '
 ####################################
 # USAGE MANUAL
 ####################################
-#
-# ./frtc.sh <threads> <maxfragsize> <read_size> <spp> <url>
-#
-# e.g.:
-# ./frtc.sh 6 1000 150 Hsalinarum ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/006/805/GCF_000006805.1_ASM680v1/GCF_000006805.1_ASM680v1_genomic.fna.gz
-#
-# there is a directory tree prerequisite to run frtc.
-# an adequate directory tree to run frtc must look like
-#
-# yourDirectory
-# ├── removeInconsistentPairs.R			# provided
-# ├── frtc.sh					# provided
-# ├── misc					# notProvided
-# │   └── adap.fa
-# └── raw 					# notProvided
-#     ├── S1_R1.fastq.gz
-#     ├── S1_R2.fastq.gz
-#     ├── S2_R1.fastq.gz
-#     ├── S2_R2.fastq.gz
-#     ├── S3_R1.fastq.gz
-#     ├── S3_R2.fastq.gz
-#     ├── S4_R1.fastq.gz
-#     └── S4_R2.fastq.gz
-#
-# raw file names must be ended with R1 or R2 and
-# must have fastq.gz extension (i.e. gzip compressed)
-# if the libraries are paired-end
-# e.g. S1_R1.fastq.gz
-#      S1_R2.fastq.gz
-#
-# if the libraries are single-end
-# e.g. S1_R1.fastq.gz
-#
-# single-end or paired-end mode can be set in frtc.sh.
-# this script was written using paired-end as default mode
-# but you are able to change to single-end mode by setting
-# pairedend="n" on "CUSTOM VARIABLES" section.
-#
-# Also, if you are processing paired-end libraries, check if
-# R1 and R2 corresponding reads have the same name. For example,
-# if the first entry in R1 file has the header "@SRR9999999.1",
-# the first entry in R2 file must have the same header "@SRR9999999.1".
-# Everything should be the same before the first space character.
-# NCBI SRA commonly provides files that present headers like "@SRR9999999.1.1"
-# for R1 and "@SRR9999999.1.2" for R2, which may cause problems during
-# the multi-mapper resolution step of this pipeline.
-#
-# adap.fa must be a fasta file containing
-# what adapters would look like if they are sequenced.
-# for more information, check https://support.illumina.com/bulletins/2016/12/what-sequences-do-i-use-for-adapter-trimming.html
-# the file must look like:
-#
-# >indexedAdapter
-# TGGAATTCTCGGGTGCCAAGGAACTCCAGTCAC
-# >nonIndexedAdapter
-# GATCGTCGGACTGTAGAACTCTGAACGTGTAGA
-#
-# but with no hashes or spaces
-#
-# furthermore, you have to install manually the program requisites.
-# maybe newer versions are compatible, but these were the ones used to build and test
-# this script
-#
-# trimmomatic v0.36 (must be located @ /opt/Trimmomatic-0.36/trimmomatic-0.36.jar)
-# hisat2 v2.1.0 (@ PATH)
-# curl v7.58.0 (@ PATH)
-# samtools v1.7 (@ PATH)
-# mmr default version (@ PATH)
-# deeptools v3.1.1 (@PATH)
-# bedtools v2.26.0 (also tested with v2.21.0) (@ PATH)
-#
-# all the prerequisites will be checked before running
 
-####################################
+bash frtc.sh <threads> <maxfragsize> <read_size> <spp> <url>
+
+threads [INT]:     number of threads to be passed to nested programs
+
+maxfragsize [INT]: maximum insert size from the leftmost end to
+                   the rightmost of an paired-end alignment.
+                   This parameter is ignored if single-end libraries
+                   are being processed.
+
+read_size [INT]:   approximate size of reads. For an Illumina paired-end
+                   experiment of 150x2 cycles, use 150.
+
+spp [CHAR]:        prefix for genome and annotation files
+
+url [CHAR]:        URL pointing to the genome file in NCBI RefSeq FTP Server.
+                   One may find the link for RefSeq directory on the top right
+                   corner of the NCBI Assembly page for a given genome.
+
+e.g.:
+bash frtc.sh 6 1000 150 Hsalinarum ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/006/805/GCF_000006805.1_ASM680v1/GCF_000006805.1_ASM680v1_genomic.fna.gz
+
+this command line will run frtc.sh with six threads,
+with a maximum insert size of 1000, with read size of 150 nt,
+creating Hsalinarum.fa and Hsalinarum.gff files under misc
+directory to store genome and annotation, respectively.
+
+there is a directory tree prerequisite to run frtc.
+an adequate directory tree to run frtc must look like
+
+yourDirectory
+├── removeInconsistentPairs.R			# provided
+├── frtc.sh					# provided
+├── misc					# notProvided
+│   └── adap.fa
+└── raw 					# notProvided
+    ├── S1_R1.fastq.gz
+    ├── S1_R2.fastq.gz
+    ├── S2_R1.fastq.gz
+    ├── S2_R2.fastq.gz
+    ├── S3_R1.fastq.gz
+    ├── S3_R2.fastq.gz
+    ├── S4_R1.fastq.gz
+    └── S4_R2.fastq.gz
+
+raw file names must be ended with R1 or R2 and
+must have fastq.gz extension (i.e. gzip compressed)
+if the libraries are paired-end
+e.g. S1_R1.fastq.gz
+     S1_R2.fastq.gz
+
+if the libraries are single-end
+e.g. S1_R1.fastq.gz
+
+single-end or paired-end mode can be set in frtc.sh.
+this script was written using paired-end as default mode
+but you are able to change to single-end mode by setting
+pairedend="n" on "CUSTOM VARIABLES" section.
+
+Also, if you are processing paired-end libraries, check if
+R1 and R2 corresponding reads have the same name. For example,
+if the first entry in R1 file has the header "@SRR9999999.1",
+the first entry in R2 file must have the same header "@SRR9999999.1".
+Everything should be the same before the first space character.
+NCBI SRA commonly provides files that present headers like "@SRR9999999.1.1"
+for R1 and "@SRR9999999.1.2" for R2, which may cause problems during
+the multi-mapper resolution step of this pipeline.
+
+adap.fa must be a fasta file containing
+what adapters would look like if they are sequenced.
+for more information, check https://support.illumina.com/bulletins/2016/12/what-sequences-do-i-use-for-adapter-trimming.html
+the file must look like:
+
+>indexedAdapter
+TGGAATTCTCGGGTGCCAAGGAACTCCAGTCAC
+>nonIndexedAdapter
+GATCGTCGGACTGTAGAACTCTGAACGTGTAGA
+
+but with no hashes or spaces
+
+furthermore, you have to install manually the program requisites.
+maybe newer versions are compatible, but these were the ones used
+to build and test this script:
+
+trimmomatic v0.36 (must be located @ /opt/Trimmomatic-0.36/trimmomatic-0.36.jar)
+hisat2 v2.1.0 (@ PATH)
+curl v7.58.0 (@ PATH)
+samtools v1.7 (@ PATH)
+mmr default version (@ PATH)
+deeptools v3.1.1 (@PATH)
+bedtools v2.26.0 (also tested with v2.21.0) (@ PATH)
+
+all the prerequisites will be checked before running
+
+###################################
 # PURPOSE AND GENERAL INFO
-####################################
-#
-# this script will perform every task
-# from trimming Illumina RNASeq raw data (fastq files)
-# to write coverage files (bedgraph and IGV files)
-#
-# it also counts the start position of reads
-# and end position if a paired-end experiment is supplied
-#
-# single-end
-#                    end position (@ threeprime directory; only meaningful in a few cases; use with caution)
-# R1                 |
-# ------------------->
-# |
-# start position (@ fiveprime directory)
-#
-# paired-end
-#                      RNA FRAGMENT (INSERT)
-# 5prime                                                3prime
-# ------------------------------------------------------------
-#
-# R1                                                         end position (@ threeprime directory)
-# --------------->                                           |
-# |                                       <-------------------
-# start position (@ fiveprime directory)                    R2
-#
-#
-# >>>>>>>>>>>>>>>>>>>>>>>>>>>>WARNING<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-# be aware this feature doesnt work for dUTP library preparations;
-# be aware that uniq mode is not supported for
-# fiveprime, threeprime and TSSAR input results
-# ---------------------------------------------------------------
-#
-# furthermore, it will filter bam files in order to keep
-# only the R1 files, for they are useful to find TSS
-# in dRNASeq experiments (e.g. TEXminus vs. TEXplus experiments)
-# the filtered bams are placed within tssarinput directory
-#
-# there are a few modules.
-# each step usually relies on the previous one
-# but they will be executed only if the output
-# directory is not created.
-# this is a simple way to enable the rerun of the
-# late steps without starting from the beginning
-#
-# those modules (or steps) are summarized below:
-# 1. trimming files
-# 2. downloading reference genome and annotation from NCBI RefSeq; building HISAT2 index and aligning to ref. genome
-# 3. filtering uniquely aligned reads
-# 4. converting SAM files to BAM and sorting them by read name (performed by SAMtools)
-# 5. adjusting position of multi-mappers using MMR and removing pairs that do not match each other (custom Rscript)
-# 6. creating coverage files (bedgraph and igv format) using deepTools
-# 7. creating TSSAR input BAM files
-# 8. creating five prime profiling coverage (bedgraph format) using bedtools
-# 9. creating three prime profiling coverage (bedgraph format) using bedtools
+###################################
+
+this script will perform every task
+from trimming Illumina RNASeq raw data (fastq files)
+to write coverage files (bedgraph and IGV files)
+
+it also counts the start position of reads
+and end position if a paired-end experiment is supplied
+
+single-end
+            end position (@ threeprime directory; only meaningful in a few cases; use with caution)
+R1                 |
+------------------->
+|
+start position (@ fiveprime directory)
+
+paired-end
+              RNA FRAGMENT (INSERT)
+5prime                                                3prime
+------------------------------------------------------------
+
+R1                                                         end position (@ threeprime directory)
+--------------->                                           |
+|                                       <-------------------
+start position (@ fiveprime directory)                    R2
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>WARNING<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+be aware this feature doesnt work for dUTP library preparations;
+be aware that uniq mode is not supported for
+fiveprime, threeprime and TSSAR input results
+---------------------------------------------------------------
+
+furthermore, it will filter bam files in order to keep
+only the R1 files, for they are useful to find TSS
+in dRNASeq experiments (e.g. TEXminus vs. TEXplus experiments)
+the filtered bams are placed within tssarinput directory
+
+there are a few modules.
+each step usually relies on the previous one
+but they will be executed only if the output
+directory is not created.
+this is a simple way to enable the rerun of the
+late steps without starting from the beginning
+
+those modules (or steps) are summarized below:
+1. trimming files
+2. downloading reference genome and annotation from NCBI RefSeq; building HISAT2 index and aligning to ref. genome
+3. filtering uniquely aligned reads
+4. converting SAM files to BAM and sorting them by read name (performed by SAMtools)
+5. adjusting position of multi-mappers using MMR and removing pairs that do not match each other (custom Rscript)
+6. creating coverage files (bedgraph and igv format) using deepTools
+7. creating TSSAR input BAM files
+8. creating five prime profiling coverage (bedgraph format) using bedtools
+9. creating three prime profiling coverage (bedgraph format) using bedtools
 '
 fi
