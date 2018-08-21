@@ -53,13 +53,8 @@ writer = bamWriter(bamheader, out)
 # opening file to write header and alignments that present something strange
 fail = bamWriter(bamheader, outfail)
 
-# # debug variables
+# setting counter
 ntotal = 0
-# namenotequal = 0
-# pos1notequalmpos2 = 0
-# pos2notequalmpos1 = 0
-# insertlength1notok = 0
-# insertlength2notok = 0
 
 # getting aligns
 rewind(bamnsorted)
@@ -68,12 +63,12 @@ align1 = getNextAlign(bamnsorted)
 while(!is.null(align1)){
 
   align2 = getNextAlign(bamnsorted)
-  name1eqname2 = name(align1) == name(align2) #; namenotequal = namenotequal + !name1eqname2
+  name1eqname2 = name(align1) == name(align2)
   
   if(name1eqname2){
 
-	  pos1eqmpos2 = position(align1) == matePosition(align2) #; pos1notequalmpos2 = pos1notequalmpos2 + !pos1eqmpos2
-	  mpos1eqpos2 = position(align2) == matePosition(align1) #; pos2notequalmpos1 = pos2notequalmpos1 + !mpos1eqpos2
+	  pos1eqmpos2 = position(align1) == matePosition(align2)
+	  mpos1eqpos2 = position(align2) == matePosition(align1)
 	  
 	  if(position(align1) < position(align2)){
 	    insertlen1 = position(align2) + nchar(alignSeq(align2)) - position(align1)
@@ -94,8 +89,8 @@ while(!is.null(align1)){
 	    }
 	  }
 	  
-	  insertlengthok1 = insertlen1 == insertSize(align1) #; insertlength1notok = insertlength1notok + !insertlengthok1
-	  insertlengthok2 = insertlen2 == insertSize(align2) #; insertlength2notok = insertlength2notok + !insertlengthok2
+	  insertlengthok1 = insertlen1 == insertSize(align1)
+	  insertlengthok2 = insertlen2 == insertSize(align2)
 	  
 	  if((name1eqname2 & pos1eqmpos2 & mpos1eqpos2 & insertlengthok1 & insertlengthok2) == T){
 	    bamSave(object = writer, value = align1, refid = refID(align1))
@@ -119,11 +114,3 @@ bamClose(writer)
 
 # closing bamfile fail
 bamClose(fail)
-
-# printing debug variables
-# namenotequal
-# ntotal
-# pos1notequalmpos2
-# pos2notequalmpos1
-# insertlength1notok
-# insertlength2notok
