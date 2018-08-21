@@ -91,8 +91,14 @@ while(!is.null(align1)){
 	  
 	  insertlengthok1 = insertlen1 == insertSize(align1)
 	  insertlengthok2 = insertlen2 == insertSize(align2)
+
+          # check if a big insert might be actually a small rna
+          # we would rather remove these big unreal inserts 
+          seq1eqseq2 = alignSeq(align1) == alignSeq(align2)
+          seq1leinsertlength1 = nchar(alignSeq(align1)) < abs(insertSize(align1))
+          shouldbekept = !(seq1eqseq2 & seq1leinsertlength1)
 	  
-	  if((name1eqname2 & pos1eqmpos2 & mpos1eqpos2 & insertlengthok1 & insertlengthok2) == T){
+	  if((name1eqname2 & pos1eqmpos2 & mpos1eqpos2 & insertlengthok1 & insertlengthok2 & shouldbekept) == T){
 	    bamSave(object = writer, value = align1, refid = refID(align1))
 	    bamSave(object = writer, value = align2, refid = refID(align2))
 	  } else {
