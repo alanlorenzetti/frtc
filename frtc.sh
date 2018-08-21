@@ -1289,7 +1289,7 @@ those modules (or steps) are summarized below:
 2. downloading reference genome and annotation from NCBI RefSeq; building HISAT2 index and aligning to ref. genome
 3. filtering uniquely aligned reads
 4. converting SAM files to BAM and sorting them by read name (performed by SAMtools)
-5. adjusting position of multi-mappers using MMR and removing pairs that do not match each other (custom Rscript)
+5. adjusting position of multi-mappers using MMR and removing pairs that do not match each other (custom Rscript; see https://github.com/ratschlab/mmr/issues/5)
 6. creating coverage files (bedgraph and igv format) using deepTools
 7. creating TSSAR input BAM files
 8. creating five prime profiling coverage (bedgraph format) using bedtools
