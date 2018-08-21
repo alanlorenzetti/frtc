@@ -63,8 +63,13 @@ align1 = getNextAlign(bamnsorted)
 while(!is.null(align1)){
 
   align2 = getNextAlign(bamnsorted)
-  name1eqname2 = name(align1) == name(align2)
-  
+
+  if(!is.null(align2)){
+          name1eqname2 = name(align1) == name(align2)
+  } else {
+          break
+  } 
+
   if(name1eqname2){
 
 	  pos1eqmpos2 = position(align1) == matePosition(align2)
