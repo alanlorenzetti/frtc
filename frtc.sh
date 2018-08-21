@@ -530,7 +530,7 @@ fi
 # for example: it reports 2 counts for each infered insert
 # in this way, we divide by 2 the counts for paired-end coverage
 #
-# this discouraje us to use gapped or softclipped alignments
+# this discourage us to use gapped or softclipped alignments
 # because deeptools also attribute different values to regions of gap and softclip
 # and after dividing by two, it will present non-integer values
 #
