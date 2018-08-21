@@ -64,11 +64,9 @@ while(!is.null(align1)){
 
   align2 = getNextAlign(bamnsorted)
 
-  if(!is.null(align2)){
-          name1eqname2 = name(align1) == name(align2)
-  } else {
-          break
-  } 
+  if(is.null(align2)){ break }
+
+  name1eqname2 = name(align1) == name(align2)
 
   if(name1eqname2){
 
