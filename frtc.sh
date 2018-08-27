@@ -4,8 +4,8 @@
 # built and tested on Ubuntu 16.04.3 LTS 64bit
 # also tested on Debian GNU/Linux jessie/sid and Ubuntu 18.04.1
 
-version=0.5.0
-lastupdate=20180821
+version=0.6.0
+lastupdate=20180827
 
 # please, check the README.md file before using this script
 # there is also a version of the manual on the end of this file
@@ -28,7 +28,8 @@ Usage:
 
 bash frtc.sh <threads> <maxfragsize> <read_size> <spp> <url>
 
-threads [INT]:     number of threads to be passed to nested programs
+threads [INT]:     number of threads to be passed to nested programs.
+                   maximum value: 99
 
 maxfragsize [INT]: maximum insert size from the leftmost end to
                    the rightmost of an paired-end alignment.
@@ -78,6 +79,7 @@ normalize="n"
 ####################################
 # number of threads to run the applications
 threads=$1
+if [ "$threads" -gt 99 ] ; then echo >&2 "Threads argument value can not be greater than 99" ; exit 1 ; fi
 
 # max fragment size for hisat2 and bamCoverage
 maxfragsize=$2
@@ -114,10 +116,10 @@ tssarinputdir="tssarinput"
 # directories with the suffix _norm
 
 if [ "$normalize" == "y" ] ; then
-	coveragedir="coverage_norm"
-	coverageuniqdir="coverage_uniq_norm"
-	fiveprimedir="fiveprime_norm"
-	threeprimedir="threeprime_norm"
+        coveragedir="coverage_norm"
+        coverageuniqdir="coverage_uniq_norm"
+        fiveprimedir="fiveprime_norm"
+        threeprimedir="threeprime_norm"
 fi
 
 ####################################
@@ -147,7 +149,7 @@ if [ ! -e misc/adap.fa ] ; then echo >&2 "Adapter sequences not found. Aborting"
 # checking programs
 
 for i in curl hisat2 samtools mmr deeptools R bedtools; do
-	command -v $i > /dev/null >&1 || { echo >&2 "$i is not installed. Aborting" ; exit 1; }
+        command -v $i > /dev/null >&1 || { echo >&2 "$i is not installed. Aborting" ; exit 1; }
 done
 
 R --slave -e 'if(!require("rbamtools", quietly=T)){quit(save="no", status=1)}else{quit(save="no", status=0)}'
@@ -179,48 +181,48 @@ echo "Done!"
 # S1_R1-unpaired.fastq.gz
 
 if [ ! -d $trimmeddir ] ; then
-	mkdir $trimmeddir
+        mkdir $trimmeddir
 
-	echo "Step 1: Starting Trimming"
+        echo "Step 1: Starting Trimming"
 
-	if [ "$pairedend" == "y" ] ; then
-		for prefix in $prefixes ; do
-			echo "Trimming $prefix"
-			R1=$rawdir/$prefix"_R1.fastq.gz"
-			R2=$rawdir/$prefix"_R2.fastq.gz"
-			outpairedR1=$trimmeddir/$prefix"-paired_R1.fastq.gz"
-			outpairedR2=$trimmeddir/$prefix"-paired_R2.fastq.gz"
-			outunpairedR1=$trimmeddir/$prefix"-unpaired_R1.fastq.gz"
-			outunpairedR2=$trimmeddir/$prefix"-unpaired_R2.fastq.gz"
-			logfile=$trimmeddir/$prefix".log"
+        if [ "$pairedend" == "y" ] ; then
+                for prefix in $prefixes ; do
+                        echo "Trimming $prefix"
+                        R1=$rawdir/$prefix"_R1.fastq.gz"
+                        R2=$rawdir/$prefix"_R2.fastq.gz"
+                        outpairedR1=$trimmeddir/$prefix"-paired_R1.fastq.gz"
+                        outpairedR2=$trimmeddir/$prefix"-paired_R2.fastq.gz"
+                        outunpairedR1=$trimmeddir/$prefix"-unpaired_R1.fastq.gz"
+                        outunpairedR2=$trimmeddir/$prefix"-unpaired_R2.fastq.gz"
+                        logfile=$trimmeddir/$prefix".log"
 
-			java -jar /opt/Trimmomatic-0.36/trimmomatic-0.36.jar PE \
-			-threads $threads \
-			$R1 $R2 \
-			$outpairedR1 $outunpairedR1 \
-			$outpairedR2 $outunpairedR2 \
-			ILLUMINACLIP:$miscdir/adap.fa:1:30:10 \
-			SLIDINGWINDOW:4:30 \
-			MINLEN:20 > $logfile 2>&1
-		done
-	else
-		for prefix in $prefixes ; do
-			echo "Trimming $prefix"
-			R1=$rawdir/$prefix"_R1.fastq.gz"
-			outunpairedR1=$trimmeddir/$prefix"-unpaired_R1.fastq.gz"
-			logfile=$trimmeddir/$prefix".log"
+                        java -jar /opt/Trimmomatic-0.36/trimmomatic-0.36.jar PE \
+                        -threads $threads \
+                        $R1 $R2 \
+                        $outpairedR1 $outunpairedR1 \
+                        $outpairedR2 $outunpairedR2 \
+                        ILLUMINACLIP:$miscdir/adap.fa:1:30:10 \
+                        SLIDINGWINDOW:4:30 \
+                        MINLEN:20 > $logfile 2>&1
+                done
+        else
+                for prefix in $prefixes ; do
+                        echo "Trimming $prefix"
+                        R1=$rawdir/$prefix"_R1.fastq.gz"
+                        outunpairedR1=$trimmeddir/$prefix"-unpaired_R1.fastq.gz"
+                        logfile=$trimmeddir/$prefix".log"
 
-			java -jar /opt/Trimmomatic-0.36/trimmomatic-0.36.jar SE \
-			-threads $threads \
-			$R1 \
-			$outunpairedR1 \
-			ILLUMINACLIP:$miscdir/adap.fa:1:30:10 \
-			SLIDINGWINDOW:4:30 \
-			MINLEN:20 > $logfile 2>&1
-		done
-	fi
+                        java -jar /opt/Trimmomatic-0.36/trimmomatic-0.36.jar SE \
+                        -threads $threads \
+                        $R1 \
+                        $outunpairedR1 \
+                        ILLUMINACLIP:$miscdir/adap.fa:1:30:10 \
+                        SLIDINGWINDOW:4:30 \
+                        MINLEN:20 > $logfile 2>&1
+                done
+        fi
 
-	echo "Done!"
+        echo "Done!"
 fi
 
 ######################
@@ -228,107 +230,107 @@ fi
 ######################
 
 if [ ! -d $samdir ] ; then
-	mkdir $samdir
+        mkdir $samdir
 
-	echo "Step 2: Starting Alignment to ref. Genome"
+        echo "Step 2: Starting Alignment to ref. Genome"
 
-	if [ ! -f $miscdir/$spp".1.ht2" ] ; then
-		# downloading ref genome and annotation from NCBI RefSeq
-		# it will remove region features from GFF, for they are annoying
-		# to observe on genome browser
-		echo "Downloading genome"
-		curl $url 2> /dev/null | zcat > $miscdir/$spp".fa"
-		echo "Downloading annotation"
-		curl $urlannot 2> /dev/null | zcat | \
-		awk -v OFS="\t" -v FS="\t" '{if(/^#/){print}else{if($3 != "region"){print}}}' > $miscdir/$spp".gff"
-		echo "Building HISAT2 index"
-		hisat2-build $miscdir/$spp".fa" $miscdir/$spp > /dev/null 2>&1
-		echo "Done!"
-	fi
+        if [ ! -f $miscdir/$spp".1.ht2" ] ; then
+                # downloading ref genome and annotation from NCBI RefSeq
+                # it will remove region features from GFF, for they are annoying
+                # to observe on genome browser
+                echo "Downloading genome"
+                curl $url 2> /dev/null | zcat > $miscdir/$spp".fa"
+                echo "Downloading annotation"
+                curl $urlannot 2> /dev/null | zcat | \
+                awk -v OFS="\t" -v FS="\t" '{if(/^#/){print}else{if($3 != "region"){print}}}' > $miscdir/$spp".gff"
+                echo "Building HISAT2 index"
+                hisat2-build $miscdir/$spp".fa" $miscdir/$spp > /dev/null 2>&1
+                echo "Done!"
+        fi
 
-	if [ "$pairedend" == "y" ] ; then
-		# aligning reads to ref genome
-		# rdg and rfg are set to 1000,1 to make it impossible
-		# to report reads with insertions or deletions considering the ref genome
-		# no discordant, mixed, spliced or softclipped alignments are allowed
-		# we allow the reporting of at most 1000 alignments per read
-		# because we are gonna choose the best one using MMR downstream
-		for prefix in $prefixes ; do
-			echo "Aligning $prefix (paired)"
-			# aligning paired reads
-			hisat2 \
-			--no-discordant --no-mixed \
-			--no-spliced-alignment \
-			--no-softclip \
-			--rdg 1000,1 \
-			--rfg 1000,1 \
-			--rna-strandness FR \
-			-k 1000 \
-			-X $maxfragsize \
-			-p $threads \
-			-x $miscdir/$spp \
-			-1 $trimmeddir/$prefix"-paired_R1.fastq.gz" \
-			-2 $trimmeddir/$prefix"-paired_R2.fastq.gz" \
-			--summary-file $samdir/$prefix"-paired.log" | grep "^@\|YT:Z:CP" > $samdir/$prefix"-paired.sam"
+        if [ "$pairedend" == "y" ] ; then
+                # aligning reads to ref genome
+                # rdg and rfg are set to 1000,1 to make it impossible
+                # to report reads with insertions or deletions considering the ref genome
+                # no discordant, mixed, spliced or softclipped alignments are allowed
+                # we allow the reporting of at most 1000 alignments per read
+                # because we are gonna choose the best one using MMR downstream
+                for prefix in $prefixes ; do
+                        echo "Aligning $prefix (paired)"
+                        # aligning paired reads
+                        hisat2 \
+                        --no-discordant --no-mixed \
+                        --no-spliced-alignment \
+                        --no-softclip \
+                        --rdg 1000,1 \
+                        --rfg 1000,1 \
+                        --rna-strandness FR \
+                        -k 1000 \
+                        -X $maxfragsize \
+                        -p $threads \
+                        -x $miscdir/$spp \
+                        -1 $trimmeddir/$prefix"-paired_R1.fastq.gz" \
+                        -2 $trimmeddir/$prefix"-paired_R2.fastq.gz" \
+                        --summary-file $samdir/$prefix"-paired.log" | grep "^@\|YT:Z:CP" > $samdir/$prefix"-paired.sam"
 
-			# aligning unpaired R1
-			echo "Aligning $prefix (unpaired R1)"
-			# unpaired R1 comes from the same strand of the RNA molecule in the sample
-			hisat2 \
-			--no-spliced-alignment \
-			--no-softclip \
-			--rdg 1000,1 \
-			--rfg 1000,1 \
-			--rna-strandness F \
-			-k 1000 \
-			-p $threads \
-			-x $miscdir/$spp \
-			-U $trimmeddir/$prefix"-unpaired_R1.fastq.gz" \
-			--summary-file $samdir/$prefix"-unpaired_R1.log" | grep "^@\|YT:Z:UU" > $samdir/$prefix"-unpaired_R1.sam"
+                        # aligning unpaired R1
+                        echo "Aligning $prefix (unpaired R1)"
+                        # unpaired R1 comes from the same strand of the RNA molecule in the sample
+                        hisat2 \
+                        --no-spliced-alignment \
+                        --no-softclip \
+                        --rdg 1000,1 \
+                        --rfg 1000,1 \
+                        --rna-strandness F \
+                        -k 1000 \
+                        -p $threads \
+                        -x $miscdir/$spp \
+                        -U $trimmeddir/$prefix"-unpaired_R1.fastq.gz" \
+                        --summary-file $samdir/$prefix"-unpaired_R1.log" | grep "^@\|YT:Z:UU" > $samdir/$prefix"-unpaired_R1.sam"
 
-			# aligning unpaired R2
-			echo "Aligning $prefix (unpaired R2)"
-			# unpaired R2 comes from an artificial opposite strand of the RNA molecule in the sample (first cDNA strand synthesized)
-			hisat2 \
-			--no-spliced-alignment \
-			--no-softclip \
-			--rdg 1000,1 \
-			--rfg 1000,1 \
-			--rna-strandness R \
-			-k 1000 \
-			-p $threads \
-			-x $miscdir/$spp \
-			-U $trimmeddir/$prefix"-unpaired_R2.fastq.gz" \
-			--summary-file $samdir/$prefix"-unpaired_R2.log" | grep "^@\|YT:Z:UU" > $samdir/$prefix"-unpaired_R2.sam"
+                        # aligning unpaired R2
+                        echo "Aligning $prefix (unpaired R2)"
+                        # unpaired R2 comes from an artificial opposite strand of the RNA molecule in the sample (first cDNA strand synthesized)
+                        hisat2 \
+                        --no-spliced-alignment \
+                        --no-softclip \
+                        --rdg 1000,1 \
+                        --rfg 1000,1 \
+                        --rna-strandness R \
+                        -k 1000 \
+                        -p $threads \
+                        -x $miscdir/$spp \
+                        -U $trimmeddir/$prefix"-unpaired_R2.fastq.gz" \
+                        --summary-file $samdir/$prefix"-unpaired_R2.log" | grep "^@\|YT:Z:UU" > $samdir/$prefix"-unpaired_R2.sam"
 
-			samtools view -@ $threads -h $samdir/$prefix"-unpaired_R2.sam" | \
-			awk -v OFS="\t" -v FS="\t" '{if(/^@/){print}\
-						else{if($2 == 0 || $2 == 256){$1 = $1"_R2" ; $2 = $2+16; print}\
-						else{if($2 == 16 || $2 == 272){$1 = $1"_R2" ; $2 = $2-16; print}\
-						else{$1 = $1"_R2" ; print}}}}' > $samdir/$prefix"-unpaired_R2.tmp"
+                        samtools view -@ $threads -h $samdir/$prefix"-unpaired_R2.sam" | \
+                        awk -v OFS="\t" -v FS="\t" '{if(/^@/){print}\
+                                                else{if($2 == 0 || $2 == 256){$1 = $1"_R2" ; $2 = $2+16; print}\
+                                                else{if($2 == 16 || $2 == 272){$1 = $1"_R2" ; $2 = $2-16; print}\
+                                                else{$1 = $1"_R2" ; print}}}}' > $samdir/$prefix"-unpaired_R2.tmp"
 
-			mv $samdir/$prefix"-unpaired_R2.tmp" $samdir/$prefix"-unpaired_R2.sam"
-		done
-	else
-		for prefix in $prefixes ; do
-			# aligning unpaired R1
-			echo "Aligning $prefix (unpaired R1)"
+                        mv $samdir/$prefix"-unpaired_R2.tmp" $samdir/$prefix"-unpaired_R2.sam"
+                done
+        else
+                for prefix in $prefixes ; do
+                        # aligning unpaired R1
+                        echo "Aligning $prefix (unpaired R1)"
 
-			hisat2 \
-			--no-spliced-alignment \
-			--no-softclip \
-			--rdg 1000,1 \
-			--rfg 1000,1 \
-			--rna-strandness F \
-			-k 1000 \
-			-p $threads \
-			-x $miscdir/$spp \
-			-U $trimmeddir/$prefix"-unpaired_R1.fastq.gz" \
-			--summary-file $samdir/$prefix"-unpaired_R1.log" > $samdir/$prefix"-unpaired_R1.sam"
-		done
-	fi
+                        hisat2 \
+                        --no-spliced-alignment \
+                        --no-softclip \
+                        --rdg 1000,1 \
+                        --rfg 1000,1 \
+                        --rna-strandness F \
+                        -k 1000 \
+                        -p $threads \
+                        -x $miscdir/$spp \
+                        -U $trimmeddir/$prefix"-unpaired_R1.fastq.gz" \
+                        --summary-file $samdir/$prefix"-unpaired_R1.log" > $samdir/$prefix"-unpaired_R1.sam"
+                done
+        fi
 
-	echo "Done!"
+        echo "Done!"
 fi
 
 ######################
@@ -336,25 +338,25 @@ fi
 ######################
 
 if [ "$uniqaln" == "y" ] ; then
-	if [ ! -d $samuniqdir ] ; then
-		mkdir $samuniqdir
+        if [ ! -d $samuniqdir ] ; then
+                mkdir $samuniqdir
 
-		echo "Step 3: Filtering uniquely aligned reads"
+                echo "Step 3: Filtering uniquely aligned reads"
 
-		if [ "$pairedend" == "y" ] ; then
-			for prefix in $prefixes ; do
-				grep "^@\|NH:i:1$" $samdir/$prefix"-paired.sam" > $samuniqdir/$prefix"-paired.sam"
-				grep "^@\|NH:i:1$" $samdir/$prefix"-unpaired_R1.sam" > $samuniqdir/$prefix"-unpaired_R1.sam"
-				grep "^@\|NH:i:1$" $samdir/$prefix"-unpaired_R2.sam" > $samuniqdir/$prefix"-unpaired_R2.sam"
-			done
+                if [ "$pairedend" == "y" ] ; then
+                        for prefix in $prefixes ; do
+                                grep "^@\|NH:i:1$" $samdir/$prefix"-paired.sam" > $samuniqdir/$prefix"-paired.sam"
+                                grep "^@\|NH:i:1$" $samdir/$prefix"-unpaired_R1.sam" > $samuniqdir/$prefix"-unpaired_R1.sam"
+                                grep "^@\|NH:i:1$" $samdir/$prefix"-unpaired_R2.sam" > $samuniqdir/$prefix"-unpaired_R2.sam"
+                        done
 
-			echo "Done!"
-		else
-			for prefix in $prefixes ; do
-				grep "^@\|NH:i:1$" $samdir/$prefix"-unpaired_R1.sam" > $samuniqdir/$prefix"-unpaired_R1.sam"
-			done
-		fi
-	fi
+                        echo "Done!"
+                else
+                        for prefix in $prefixes ; do
+                                grep "^@\|NH:i:1$" $samdir/$prefix"-unpaired_R1.sam" > $samuniqdir/$prefix"-unpaired_R1.sam"
+                        done
+                fi
+        fi
 fi
 
 ######################
@@ -362,45 +364,45 @@ fi
 ######################
 
 if [ ! -d $bamdir ] ; then
-	mkdir $bamdir
+        mkdir $bamdir
 
-	echo "Step 4.1: Converting to BAM and sorting by read name"
+        echo "Step 4.1: Converting to BAM and sorting by read name"
 
-	if [ "$pairedend" == "y" ] ; then
-		for prefix in $prefixes ; do
-			samtools merge \
-			-@ $threads \
-			$bamdir/$prefix"-merged.bam" \
-			$samdir/$prefix"-paired.sam" \
-			$samdir/$prefix"-unpaired_R1.sam" \
-			$samdir/$prefix"-unpaired_R2.sam" 2> /dev/null
+        if [ "$pairedend" == "y" ] ; then
+                for prefix in $prefixes ; do
+                        samtools merge \
+                        -@ $threads \
+                        $bamdir/$prefix"-merged.bam" \
+                        $samdir/$prefix"-paired.sam" \
+                        $samdir/$prefix"-unpaired_R1.sam" \
+                        $samdir/$prefix"-unpaired_R2.sam" 2> /dev/null
 
-			# q 1 grants a good quality of alignment
-			samtools view \
-			-@ $threads \
-			-h \
-			-b \
-			-q 1 $bamdir/$prefix"-merged.bam" | \
-			samtools sort \
-			-@ $threads \
-			-n \
-			-o $bamdir/$prefix"-sorted.bam" 2> /dev/null
-		done
-	else
-		for prefix in $prefixes ; do
-			samtools view \
-			-@ $threads \
-			-h \
-			-b \
-			-q 1 $samdir/$prefix"-unpaired_R1.sam" | \
-			samtools sort \
-			-@ $threads \
-			-n \
-			-o $bamdir/$prefix"-sorted.bam" 2> /dev/null
-		done
-	fi
+                        # q 1 grants a good quality of alignment
+                        samtools view \
+                        -@ $threads \
+                        -h \
+                        -b \
+                        -q 1 $bamdir/$prefix"-merged.bam" | \
+                        samtools sort \
+                        -@ $threads \
+                        -n \
+                        -o $bamdir/$prefix"-sorted.bam" 2> /dev/null
+                done
+        else
+                for prefix in $prefixes ; do
+                        samtools view \
+                        -@ $threads \
+                        -h \
+                        -b \
+                        -q 1 $samdir/$prefix"-unpaired_R1.sam" | \
+                        samtools sort \
+                        -@ $threads \
+                        -n \
+                        -o $bamdir/$prefix"-sorted.bam" 2> /dev/null
+                done
+        fi
 
-	echo "Done!"
+        echo "Done!"
 fi
 
 ######################
@@ -408,52 +410,52 @@ fi
 ######################
 
 if [ "$uniqaln" == "y" ] ; then
-	if [ ! -d $bamuniqdir ] ; then
-		mkdir $bamuniqdir
+        if [ ! -d $bamuniqdir ] ; then
+                mkdir $bamuniqdir
 
-		echo "Step 4.2: Converting uniquely aligned to BAM and sorting"
+                echo "Step 4.2: Converting uniquely aligned to BAM and sorting"
 
-		if [ "$pairedend" == "y" ] ; then
-			for prefix in $prefixes ; do
-				samtools merge \
-				-@ $threads \
-				$bamuniqdir/$prefix"-merged.bam" \
-				$samuniqdir/$prefix"-paired.sam" \
-				$samuniqdir/$prefix"-unpaired_R1.sam" \
-				$samuniqdir/$prefix"-unpaired_R2.sam" 2> /dev/null
+                if [ "$pairedend" == "y" ] ; then
+                        for prefix in $prefixes ; do
+                                samtools merge \
+                                -@ $threads \
+                                $bamuniqdir/$prefix"-merged.bam" \
+                                $samuniqdir/$prefix"-paired.sam" \
+                                $samuniqdir/$prefix"-unpaired_R1.sam" \
+                                $samuniqdir/$prefix"-unpaired_R2.sam" 2> /dev/null
 
-				samtools view \
-				-@ $threads \
-				-h \
-				-b \
-				-q 1 $bamuniqdir/$prefix"-merged.bam" | \
-				samtools sort \
-				-@ $threads \
-				-o $bamuniqdir/$prefix"-sorted.bam" 2> /dev/null
+                                samtools view \
+                                -@ $threads \
+                                -h \
+                                -b \
+                                -q 1 $bamuniqdir/$prefix"-merged.bam" | \
+                                samtools sort \
+                                -@ $threads \
+                                -o $bamuniqdir/$prefix"-sorted.bam" 2> /dev/null
 
-				samtools index \
-				-b \
-				$bamuniqdir/$prefix"-sorted.bam"
-			done
-		else
-			for prefix in $prefixes ; do
-				samtools view \
-				-@ $threads \
-				-h \
-				-b \
-				-q 1 $samuniqdir/$prefix"-unpaired_R1.sam" | \
-				samtools sort \
-				-@ $threads \
-				-o $bamuniqdir/$prefix"-sorted.bam" 2> /dev/null
+                                samtools index \
+                                -b \
+                                $bamuniqdir/$prefix"-sorted.bam"
+                        done
+                else
+                        for prefix in $prefixes ; do
+                                samtools view \
+                                -@ $threads \
+                                -h \
+                                -b \
+                                -q 1 $samuniqdir/$prefix"-unpaired_R1.sam" | \
+                                samtools sort \
+                                -@ $threads \
+                                -o $bamuniqdir/$prefix"-sorted.bam" 2> /dev/null
 
-				samtools index \
-				-b \
-				$bamuniqdir/$prefix"-sorted.bam"
-			done
-		fi
+                                samtools index \
+                                -b \
+                                $bamuniqdir/$prefix"-sorted.bam"
+                        done
+                fi
 
-		echo "Done!"
-	fi
+                echo "Done!"
+        fi
 fi
 
 ######################
@@ -465,59 +467,59 @@ fi
 # repetitive regions on the genome
 
 if [ ! -d $mmrdir ] ; then
-	mkdir $mmrdir
+        mkdir $mmrdir
 
-	echo "Step 5: Adjusting position of multi aligned reads"
-	# we did not check if the files are sorted because they were sorted before
-	# -A is max no of valid pairs before not using pair modus
-	# we want to maximize the number of valid pairs used (i.e. all)
-	if [ "$pairedend" == "y" ] ; then
-		for prefix in $prefixes ; do
-			mmr \
-			-t $threads \
-			--no-sort-check \
-			-S \
-			-b \
-			-p \
-			-i $maxfragsize \
-			-A 1000000000 \
-			-o $mmrdir/$prefix".bam" \
-			-R $readsize \
-			$bamdir/$prefix"-sorted.bam"
+        echo "Step 5: Adjusting position of multi aligned reads"
+        # we did not check if the files are sorted because they were sorted before
+        # -A is max no of valid pairs before not using pair modus
+        # we want to maximize the number of valid pairs used (i.e. all)
+        if [ "$pairedend" == "y" ] ; then
+                for prefix in $prefixes ; do
+                        mmr \
+                        -t $threads \
+                        --no-sort-check \
+                        -S \
+                        -b \
+                        -p \
+                        -i $maxfragsize \
+                        -A 1000000000 \
+                        -o $mmrdir/$prefix".bam" \
+                        -R $readsize \
+                        $bamdir/$prefix"-sorted.bam"
 
-			samtools sort \
-			-@ $threads \
-			-o $mmrdir/$prefix"-sorted.bam" \
-			$mmrdir/$prefix".bam"
+                        samtools sort \
+                        -@ $threads \
+                        -o $mmrdir/$prefix"-sorted.bam" \
+                        $mmrdir/$prefix".bam"
 
-			samtools index \
-			-b \
-			$mmrdir/$prefix"-sorted.bam"
-		done
-	else
-		for prefix in $prefixes ; do
-			mmr \
-			-t $threads \
-			--no-sort-check \
-			-S \
-			-b \
-			-o $mmrdir/$prefix".bam" \
-			-R $readsize \
-			$bamdir/$prefix"-sorted.bam"
+                        samtools index \
+                        -b \
+                        $mmrdir/$prefix"-sorted.bam"
+                done
+        else
+                for prefix in $prefixes ; do
+                        mmr \
+                        -t $threads \
+                        --no-sort-check \
+                        -S \
+                        -b \
+                        -o $mmrdir/$prefix".bam" \
+                        -R $readsize \
+                        $bamdir/$prefix"-sorted.bam"
 
-			samtools sort \
-			-@ $threads \
-			-o $mmrdir/$prefix"-sorted.bam" \
-			$mmrdir/$prefix".bam"
+                        samtools sort \
+                        -@ $threads \
+                        -o $mmrdir/$prefix"-sorted.bam" \
+                        $mmrdir/$prefix".bam"
 
-			samtools index \
-			-b \
-			$mmrdir/$prefix"-sorted.bam"
-		done
-	fi
+                        samtools index \
+                        -b \
+                        $mmrdir/$prefix"-sorted.bam"
+                done
+        fi
 
 
-	echo "Done!"
+        echo "Done!"
 fi
 
 ######################
@@ -556,178 +558,201 @@ fi
 # https://github.com/ratschlab/mmr/issues/5
 
 if [ ! -d $coveragedir ] ; then
-	mkdir $coveragedir
+        mkdir $coveragedir
 
-	echo "Step 6.1: Creating coverage files"
+        echo "Step 6.1: Creating coverage files"
 
-	if [ ! -f $miscdir/readCounts.txt ] ; then
-		touch $miscdir/readCounts.txt
-	else
-		rm $miscdir/readCounts.txt
-		touch $miscdir/readCounts.txt
-	fi
+        if [ ! -f $miscdir/readCounts.txt ] ; then
+                touch $miscdir/readCounts.txt
+        else
+                rm $miscdir/readCounts.txt
+                touch $miscdir/readCounts.txt
+        fi
 
-	if [ "$pairedend" == "y" ] ; then
-		for prefix in $prefixes ; do
-			samtools view -@ $threads -h $mmrdir/$prefix"-sorted.bam" | \
-			grep "^@\|YT:Z:CP" | \
-			samtools view -@ $threads -b | \
-			samtools sort -n -@ $threads > $coveragedir/$prefix"-paired.bam"
+        if [ "$pairedend" == "y" ] ; then
+                for prefix in $prefixes ; do
+                        samtools view -@ $threads -h $mmrdir/$prefix"-sorted.bam" | \
+                        grep "^@\|YT:Z:CP" | \
+                        samtools sort -n -@ $threads -O SAM -o $coveragedir/$prefix"-paired.sam"
 
-			samtools view -@ $threads -h $mmrdir/$prefix"-sorted.bam" | \
-			grep "^@\|YT:Z:UU" | \
-			samtools view -@ $threads -b > $coveragedir/$prefix"-unpaired.bam"
+                        samtools view -@ $threads -h $mmrdir/$prefix"-sorted.bam" | \
+                        grep "^@\|YT:Z:UU" | \
+                        samtools view -@ $threads -b > $coveragedir/$prefix"-unpaired.bam"
 
-			R -q -f ./removeInconsistentPairs.R --args $coveragedir/$prefix"-paired.bam" > /dev/null
+                        pairedReadsAligned=`cat $coveragedir/$prefix"-paired.sam" | wc -l`
+                        perThreads=`echo $(($pairedReadsAligned/$threads))`
 
-			samtools sort -@ $threads $coveragedir/$prefix"-paired-adjusted.bam" > $coveragedir/$prefix"-paired.bam"
-			failreads=`samtools view -@ $threads $coveragedir/$prefix"-paired-failPairs.bam" | wc -l`
-			failpairs=`echo "$failreads/2" | bc`
-			echo "$prefix has $failpairs pair(s) containing reads that do(es) not match each other. Removing."
+                        if [ $(($perThreads%2)) == 1 ] ; then
+                                perThreads=`echo $(($perThreads+1))`
+                        fi
 
-			rm $coveragedir/$prefix"-paired-adjusted.bam" $coveragedir/$prefix"-paired-failPairs.bam"
+                        split -d -l $perThreads <(grep -v "^@" $coveragedir/$prefix"-paired.sam") $coveragedir/$prefix"-paired_tmp" --additional-suffix "_noheader.sam"
+                        
+                        for tmpfile in `seq -w 00 $(($threads-1))` ; do
+                                cat <(samtools view -H $coveragedir/$prefix"-paired.sam") \
+                                $coveragedir/$prefix"-paired_tmp"$tmpfile"_noheader.sam" | \
+                                samtools view -@ $threads -b > $coveragedir/$prefix"-paired_tmp"$tmpfile".bam"
 
-			samtools index -b $coveragedir/$prefix"-paired.bam"
-			samtools index -b $coveragedir/$prefix"-unpaired.bam"
+                                R -q -f ./removeInconsistentPairs.R --args $coveragedir/$prefix"-paired_tmp"$tmpfile".bam" > /dev/null &
+                        done
+                        wait
+                        
+                        find $coveragedir -name "*tmp*adjusted.bam" -exec \
+                        samtools merge -@ $threads -n $coveragedir/$prefix"-paired-adjusted.bam" {} + 
 
-			pairedReadsAligned=`samtools view -@ $threads $coveragedir/$prefix"-paired.bam" | wc -l`
-			pairsAligned=`echo "$pairedReadsAligned / 2" | bc`
-			unpairedReadsAligned=`samtools view -@ $threads $coveragedir/$prefix"-unpaired.bam" | wc -l`
-			totalAligned=`echo "$pairsAligned + $unpairedReadsAligned" | bc`
+                        find $coveragedir -name "*tmp*failPairs.bam" -exec \
+                        samtools merge -@ $threads -n $coveragedir/$prefix"-paired-failPairs.bam" {} +
 
-			printf "$prefix\t$totalAligned\n" >> $miscdir/readCounts.txt
-		done
+                        samtools sort -@ $threads $coveragedir/$prefix"-paired-adjusted.bam" > $coveragedir/$prefix"-paired.bam"
+                        failreads=`samtools view -@ $threads $coveragedir/$prefix"-paired-failPairs.bam" | wc -l`
+                        failpairs=`echo "$failreads/2" | bc`
+                        echo "$prefix has $failpairs pair(s) containing reads that do(es) not match each other. Removing."
 
-		maxTotalAligned=`awk -v FS="\t" -v OFS="\t" -v max=0 '{if($2 > max){max=$2}}END{print max}' $miscdir/readCounts.txt`
+                        rm $coveragedir/$prefix"-paired.sam"
+                        rm $coveragedir/$prefix*tmp*
+                        rm $coveragedir/$prefix"-paired-adjusted.bam" $coveragedir/$prefix"-paired-failPairs.bam"
+                        
+                        samtools index -b $coveragedir/$prefix"-paired.bam"
+                        samtools index -b $coveragedir/$prefix"-unpaired.bam"
 
-		while IFS="	" read prefix totalAligned ; do
+                        pairedReadsAligned=`samtools view -@ $threads $coveragedir/$prefix"-paired.bam" | wc -l`
+                        pairsAligned=`echo "$pairedReadsAligned / 2" | bc`
+                        unpairedReadsAligned=`samtools view -@ $threads $coveragedir/$prefix"-unpaired.bam" | wc -l`
+                        totalAligned=`echo "$pairsAligned + $unpairedReadsAligned" | bc`
 
-			if [ "$normalize" == "y" ]; then
-				correctionFactor=`echo "scale=3; $maxTotalAligned / $totalAligned" | bc`
-			else
-				correctionFactor=1
-			fi
+                        printf "$prefix\t$totalAligned\n" >> $miscdir/readCounts.txt
+                done
 
-			bamCoverage \
-			--numberOfProcessors $threads \
-			-b $coveragedir/$prefix"-paired.bam" \
-			-o $coveragedir/$prefix"-paired-fwd.bedgraph" \
-			--binSize 1 \
-			--extendReads $maxfragsize \
-			--outFileFormat bedgraph \
-			--filterRNAstrand reverse 2> /dev/null
+                maxTotalAligned=`awk -v FS="\t" -v OFS="\t" -v max=0 '{if($2 > max){max=$2}}END{print max}' $miscdir/readCounts.txt`
 
-			bamCoverage \
-			--numberOfProcessors $threads \
-			-b $coveragedir/$prefix"-paired.bam" \
-			-o $coveragedir/$prefix"-paired-rev.bedgraph" \
-			--binSize 1 \
-			--extendReads $maxfragsize \
-			--outFileFormat bedgraph \
-			--filterRNAstrand forward 2> /dev/null
+                while IFS="	" read prefix totalAligned ; do
 
-			bamCoverage \
-			--numberOfProcessors $threads \
-			-b $coveragedir/$prefix"-unpaired.bam" \
-			-o $coveragedir/$prefix"-unpaired-fwd.bedgraph" \
-			--binSize 1 \
-			--outFileFormat bedgraph \
-			--filterRNAstrand reverse 2> /dev/null
+                        if [ "$normalize" == "y" ]; then
+                                correctionFactor=`echo "scale=3; $maxTotalAligned / $totalAligned" | bc`
+                        else
+                                correctionFactor=1
+                        fi
 
-			bamCoverage \
-			--numberOfProcessors $threads \
-			-b $coveragedir/$prefix"-unpaired.bam" \
-			-o $coveragedir/$prefix"-unpaired-rev.bedgraph" \
-			--binSize 1 \
-			--outFileFormat bedgraph \
-			--filterRNAstrand forward 2> /dev/null
+                        bamCoverage \
+                        --numberOfProcessors $threads \
+                        -b $coveragedir/$prefix"-paired.bam" \
+                        -o $coveragedir/$prefix"-paired-fwd.bedgraph" \
+                        --binSize 1 \
+                        --extendReads $maxfragsize \
+                        --outFileFormat bedgraph \
+                        --filterRNAstrand reverse 2> /dev/null
 
-			bedtools unionbedg \
-			-i \
-			$coveragedir/$prefix"-paired-fwd.bedgraph" \
-			$coveragedir/$prefix"-unpaired-fwd.bedgraph" | \
-			awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor \
-			'{print $1,$2,$3,(($4/2)+$5)*correctionFactor}' > $coveragedir/$prefix"-fwd.bedgraph"
+                        bamCoverage \
+                        --numberOfProcessors $threads \
+                        -b $coveragedir/$prefix"-paired.bam" \
+                        -o $coveragedir/$prefix"-paired-rev.bedgraph" \
+                        --binSize 1 \
+                        --extendReads $maxfragsize \
+                        --outFileFormat bedgraph \
+                        --filterRNAstrand forward 2> /dev/null
 
-			bedtools unionbedg \
-			-i \
-			$coveragedir/$prefix"-paired-rev.bedgraph" \
-			$coveragedir/$prefix"-unpaired-rev.bedgraph" | \
-			awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor \
-			'{print $1,$2,$3,(($4/2)+$5)*correctionFactor}' > $coveragedir/$prefix"-rev.bedgraph"
+                        bamCoverage \
+                        --numberOfProcessors $threads \
+                        -b $coveragedir/$prefix"-unpaired.bam" \
+                        -o $coveragedir/$prefix"-unpaired-fwd.bedgraph" \
+                        --binSize 1 \
+                        --outFileFormat bedgraph \
+                        --filterRNAstrand reverse 2> /dev/null
 
-			bedtools unionbedg \
-			-i \
-			$coveragedir/$prefix"-paired-fwd.bedgraph" \
-			$coveragedir/$prefix"-unpaired-fwd.bedgraph" | \
-			awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor -v prefix=$prefix \
-			'{print $1,$2+1,$3,prefix"-fwd",(($4/2)+$5)*correctionFactor}' > $coveragedir/$prefix"-fwd.igv"
+                        bamCoverage \
+                        --numberOfProcessors $threads \
+                        -b $coveragedir/$prefix"-unpaired.bam" \
+                        -o $coveragedir/$prefix"-unpaired-rev.bedgraph" \
+                        --binSize 1 \
+                        --outFileFormat bedgraph \
+                        --filterRNAstrand forward 2> /dev/null
 
-			bedtools unionbedg \
-			-i \
-			$coveragedir/$prefix"-paired-rev.bedgraph" \
-			$coveragedir/$prefix"-unpaired-rev.bedgraph" | \
-			awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor -v prefix=$prefix \
-			'{print $1,$2+1,$3,prefix"-rev",(($4/2)+$5)*correctionFactor}' > $coveragedir/$prefix"-rev.igv"
+                        bedtools unionbedg \
+                        -i \
+                        $coveragedir/$prefix"-paired-fwd.bedgraph" \
+                        $coveragedir/$prefix"-unpaired-fwd.bedgraph" | \
+                        awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor \
+                        '{print $1,$2,$3,(($4/2)+$5)*correctionFactor}' > $coveragedir/$prefix"-fwd.bedgraph"
 
-		done < $miscdir/readCounts.txt
-	else
-		for prefix in $prefixes ; do
-			samtools view -@ $threads -h $mmrdir/$prefix"-sorted.bam" | \
-			grep "^@\|YT:Z:UU" | \
-			samtools view -@ $threads -b > $coveragedir/$prefix"-unpaired.bam"
+                        bedtools unionbedg \
+                        -i \
+                        $coveragedir/$prefix"-paired-rev.bedgraph" \
+                        $coveragedir/$prefix"-unpaired-rev.bedgraph" | \
+                        awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor \
+                        '{print $1,$2,$3,(($4/2)+$5)*correctionFactor}' > $coveragedir/$prefix"-rev.bedgraph"
 
-			samtools index -b $coveragedir/$prefix"-unpaired.bam"
+                        bedtools unionbedg \
+                        -i \
+                        $coveragedir/$prefix"-paired-fwd.bedgraph" \
+                        $coveragedir/$prefix"-unpaired-fwd.bedgraph" | \
+                        awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor -v prefix=$prefix \
+                        '{print $1,$2+1,$3,prefix"-fwd",(($4/2)+$5)*correctionFactor}' > $coveragedir/$prefix"-fwd.igv"
 
-			totalAligned=`samtools view -@ $threads $coveragedir/$prefix"-unpaired.bam" | wc -l`
+                        bedtools unionbedg \
+                        -i \
+                        $coveragedir/$prefix"-paired-rev.bedgraph" \
+                        $coveragedir/$prefix"-unpaired-rev.bedgraph" | \
+                        awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor -v prefix=$prefix \
+                        '{print $1,$2+1,$3,prefix"-rev",(($4/2)+$5)*correctionFactor}' > $coveragedir/$prefix"-rev.igv"
 
-			printf "$prefix\t$totalAligned\n" >> $miscdir/readCounts.txt
-		done
+                done < $miscdir/readCounts.txt
+        else
+                for prefix in $prefixes ; do
+                        samtools view -@ $threads -h $mmrdir/$prefix"-sorted.bam" | \
+                        grep "^@\|YT:Z:UU" | \
+                        samtools view -@ $threads -b > $coveragedir/$prefix"-unpaired.bam"
 
-		maxTotalAligned=`awk -v FS="\t" -v OFS="\t" -v max=0 '{if($2 > max){max=$2}}END{print max}' $miscdir/readCounts.txt`
+                        samtools index -b $coveragedir/$prefix"-unpaired.bam"
 
-		while IFS="	" read prefix totalAligned ; do
+                        totalAligned=`samtools view -@ $threads $coveragedir/$prefix"-unpaired.bam" | wc -l`
 
-			if [ "$normalize" == "y" ]; then
-				correctionFactor=`echo "scale=3; $maxTotalAligned / $totalAligned" | bc`
-			else
-				correctionFactor=1
-			fi
+                        printf "$prefix\t$totalAligned\n" >> $miscdir/readCounts.txt
+                done
 
-			bamCoverage \
-			--numberOfProcessors $threads \
-			-b $coveragedir/$prefix"-unpaired.bam" \
-			-o $coveragedir/$prefix"-unpaired-fwd.bedgraph.tmp" \
-			--binSize 1 \
-			--outFileFormat bedgraph \
-			--filterRNAstrand reverse 2> /dev/null
+                maxTotalAligned=`awk -v FS="\t" -v OFS="\t" -v max=0 '{if($2 > max){max=$2}}END{print max}' $miscdir/readCounts.txt`
 
-			bamCoverage \
-			--numberOfProcessors $threads \
-			-b $coveragedir/$prefix"-unpaired.bam" \
-			-o $coveragedir/$prefix"-unpaired-rev.bedgraph.tmp" \
-			--binSize 1 \
-			--outFileFormat bedgraph \
-			--filterRNAstrand forward 2> /dev/null
+                while IFS="	" read prefix totalAligned ; do
 
-			awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor \
-			'{print $1,$2,$3,$4*correctionFactor}' $coveragedir/$prefix"-unpaired-fwd.bedgraph.tmp" > $coveragedir/$prefix"-fwd.bedgraph"
+                        if [ "$normalize" == "y" ]; then
+                                correctionFactor=`echo "scale=3; $maxTotalAligned / $totalAligned" | bc`
+                        else
+                                correctionFactor=1
+                        fi
 
-			awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor \
-			'{print $1,$2,$3,$4*correctionFactor}' $coveragedir/$prefix"-unpaired-rev.bedgraph.tmp" > $coveragedir/$prefix"-rev.bedgraph"
+                        bamCoverage \
+                        --numberOfProcessors $threads \
+                        -b $coveragedir/$prefix"-unpaired.bam" \
+                        -o $coveragedir/$prefix"-unpaired-fwd.bedgraph.tmp" \
+                        --binSize 1 \
+                        --outFileFormat bedgraph \
+                        --filterRNAstrand reverse 2> /dev/null
 
-			awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor -v prefix=$prefix \
-			'{print $1,$2+1,$3,prefix"-fwd",$4*correctionFactor}' $coveragedir/$prefix"-unpaired-fwd.bedgraph.tmp" > $coveragedir/$prefix"-fwd.igv"
+                        bamCoverage \
+                        --numberOfProcessors $threads \
+                        -b $coveragedir/$prefix"-unpaired.bam" \
+                        -o $coveragedir/$prefix"-unpaired-rev.bedgraph.tmp" \
+                        --binSize 1 \
+                        --outFileFormat bedgraph \
+                        --filterRNAstrand forward 2> /dev/null
 
-			awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor -v prefix=$prefix \
-			'{print $1,$2+1,$3,prefix"-rev",$4*correctionFactor}' $coveragedir/$prefix"-unpaired-rev.bedgraph.tmp" > $coveragedir/$prefix"-rev.igv"
+                        awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor \
+                        '{print $1,$2,$3,$4*correctionFactor}' $coveragedir/$prefix"-unpaired-fwd.bedgraph.tmp" > $coveragedir/$prefix"-fwd.bedgraph"
 
-			rm $coveragedir/*.tmp
+                        awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor \
+                        '{print $1,$2,$3,$4*correctionFactor}' $coveragedir/$prefix"-unpaired-rev.bedgraph.tmp" > $coveragedir/$prefix"-rev.bedgraph"
 
-		done < $miscdir/readCounts.txt
-	fi
+                        awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor -v prefix=$prefix \
+                        '{print $1,$2+1,$3,prefix"-fwd",$4*correctionFactor}' $coveragedir/$prefix"-unpaired-fwd.bedgraph.tmp" > $coveragedir/$prefix"-fwd.igv"
 
-	echo "Done!"
+                        awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor -v prefix=$prefix \
+                        '{print $1,$2+1,$3,prefix"-rev",$4*correctionFactor}' $coveragedir/$prefix"-unpaired-rev.bedgraph.tmp" > $coveragedir/$prefix"-rev.igv"
+
+                        rm $coveragedir/*.tmp
+
+                done < $miscdir/readCounts.txt
+        fi
+
+        echo "Done!"
 fi
 
 ######################
@@ -739,169 +764,169 @@ fi
 # normalization is done using only the number of uniquely aligned reads
 # in the same aforementioned fashion
 if [ "$uniqaln" == "y" ] ; then
-	if [ ! -d $coverageuniqdir ] ; then
-		mkdir $coverageuniqdir
+        if [ ! -d $coverageuniqdir ] ; then
+                mkdir $coverageuniqdir
 
-		if [ ! -f $miscdir/readCountsUniq.txt ] ; then
-			touch $miscdir/readCountsUniq.txt
-		else
-			rm $miscdir/readCountsUniq.txt
-			touch $miscdir/readCountsUniq.txt
-		fi
+                if [ ! -f $miscdir/readCountsUniq.txt ] ; then
+                        touch $miscdir/readCountsUniq.txt
+                else
+                        rm $miscdir/readCountsUniq.txt
+                        touch $miscdir/readCountsUniq.txt
+                fi
 
-		echo "Step 6.2: Creating coverage files for uniquely aligned reads"
+                echo "Step 6.2: Creating coverage files for uniquely aligned reads"
 
-		if [ "$pairedend" == "y" ] ; then
-			for prefix in $prefixes ; do
-				samtools view -@ $threads -h $bamuniqdir/$prefix"-sorted.bam" | \
-				grep "^@\|YT:Z:CP" | \
-				samtools view -@ $threads -b > $coverageuniqdir/$prefix"-paired.bam"
+                if [ "$pairedend" == "y" ] ; then
+                        for prefix in $prefixes ; do
+                                samtools view -@ $threads -h $bamuniqdir/$prefix"-sorted.bam" | \
+                                grep "^@\|YT:Z:CP" | \
+                                samtools view -@ $threads -b > $coverageuniqdir/$prefix"-paired.bam"
 
-				samtools view -@ $threads -h $bamuniqdir/$prefix"-sorted.bam" | \
-				grep "^@\|YT:Z:UU" | \
-				samtools view -@ $threads -b > $coverageuniqdir/$prefix"-unpaired.bam"
+                                samtools view -@ $threads -h $bamuniqdir/$prefix"-sorted.bam" | \
+                                grep "^@\|YT:Z:UU" | \
+                                samtools view -@ $threads -b > $coverageuniqdir/$prefix"-unpaired.bam"
 
-				samtools index -b $coverageuniqdir/$prefix"-paired.bam"
-				samtools index -b $coverageuniqdir/$prefix"-unpaired.bam"
+                                samtools index -b $coverageuniqdir/$prefix"-paired.bam"
+                                samtools index -b $coverageuniqdir/$prefix"-unpaired.bam"
 
-				pairedReadsAligned=`samtools view -@ $threads $coverageuniqdir/$prefix"-paired.bam" | wc -l`
-				pairsAligned=`echo "$pairedReadsAligned / 2" | bc`
-				unpairedReadsAligned=`samtools view -@ $threads $coverageuniqdir/$prefix"-unpaired.bam" | wc -l`
-				totalAligned=`echo "$pairsAligned + $unpairedReadsAligned" | bc`
+                                pairedReadsAligned=`samtools view -@ $threads $coverageuniqdir/$prefix"-paired.bam" | wc -l`
+                                pairsAligned=`echo "$pairedReadsAligned / 2" | bc`
+                                unpairedReadsAligned=`samtools view -@ $threads $coverageuniqdir/$prefix"-unpaired.bam" | wc -l`
+                                totalAligned=`echo "$pairsAligned + $unpairedReadsAligned" | bc`
 
-				printf "$prefix\t$totalAligned\n" >> $miscdir/readCountsUniq.txt
-			done
+                                printf "$prefix\t$totalAligned\n" >> $miscdir/readCountsUniq.txt
+                        done
 
-			maxTotalAligned=`awk -v FS="\t" -v OFS="\t" -v max=0 '{if($2 > max){max=$2}}END{print max}' $miscdir/readCountsUniq.txt`
+                        maxTotalAligned=`awk -v FS="\t" -v OFS="\t" -v max=0 '{if($2 > max){max=$2}}END{print max}' $miscdir/readCountsUniq.txt`
 
-			while IFS="	" read prefix totalAligned ; do
+                        while IFS="	" read prefix totalAligned ; do
 
-				if [ "$normalize" == "y" ]; then
-					correctionFactor=`echo "scale=3; $maxTotalAligned / $totalAligned" | bc`
-				else
-					correctionFactor=1
-				fi
+                                if [ "$normalize" == "y" ]; then
+                                        correctionFactor=`echo "scale=3; $maxTotalAligned / $totalAligned" | bc`
+                                else
+                                        correctionFactor=1
+                                fi
 
-				bamCoverage \
-				--numberOfProcessors $threads \
-				-b $coverageuniqdir/$prefix"-paired.bam" \
-				-o $coverageuniqdir/$prefix"-paired-fwd.bedgraph" \
-				--binSize 1 \
-				--extendReads $maxfragsize \
-				--outFileFormat bedgraph \
-				--filterRNAstrand reverse 2> /dev/null
+                                bamCoverage \
+                                --numberOfProcessors $threads \
+                                -b $coverageuniqdir/$prefix"-paired.bam" \
+                                -o $coverageuniqdir/$prefix"-paired-fwd.bedgraph" \
+                                --binSize 1 \
+                                --extendReads $maxfragsize \
+                                --outFileFormat bedgraph \
+                                --filterRNAstrand reverse 2> /dev/null
 
-				bamCoverage \
-				--numberOfProcessors $threads \
-				-b $coverageuniqdir/$prefix"-paired.bam" \
-				-o $coverageuniqdir/$prefix"-paired-rev.bedgraph" \
-				--binSize 1 \
-				--extendReads $maxfragsize \
-				--outFileFormat bedgraph \
-				--filterRNAstrand forward 2> /dev/null
+                                bamCoverage \
+                                --numberOfProcessors $threads \
+                                -b $coverageuniqdir/$prefix"-paired.bam" \
+                                -o $coverageuniqdir/$prefix"-paired-rev.bedgraph" \
+                                --binSize 1 \
+                                --extendReads $maxfragsize \
+                                --outFileFormat bedgraph \
+                                --filterRNAstrand forward 2> /dev/null
 
-				bamCoverage \
-				--numberOfProcessors $threads \
-				-b $coverageuniqdir/$prefix"-unpaired.bam" \
-				-o $coverageuniqdir/$prefix"-unpaired-fwd.bedgraph" \
-				--binSize 1 \
-				--outFileFormat bedgraph \
-				--filterRNAstrand reverse 2> /dev/null
+                                bamCoverage \
+                                --numberOfProcessors $threads \
+                                -b $coverageuniqdir/$prefix"-unpaired.bam" \
+                                -o $coverageuniqdir/$prefix"-unpaired-fwd.bedgraph" \
+                                --binSize 1 \
+                                --outFileFormat bedgraph \
+                                --filterRNAstrand reverse 2> /dev/null
 
-				bamCoverage \
-				--numberOfProcessors $threads \
-				-b $coverageuniqdir/$prefix"-unpaired.bam" \
-				-o $coverageuniqdir/$prefix"-unpaired-rev.bedgraph" \
-				--binSize 1 \
-				--outFileFormat bedgraph \
-				--filterRNAstrand forward 2> /dev/null
+                                bamCoverage \
+                                --numberOfProcessors $threads \
+                                -b $coverageuniqdir/$prefix"-unpaired.bam" \
+                                -o $coverageuniqdir/$prefix"-unpaired-rev.bedgraph" \
+                                --binSize 1 \
+                                --outFileFormat bedgraph \
+                                --filterRNAstrand forward 2> /dev/null
 
-				bedtools unionbedg \
-				-i \
-				$coverageuniqdir/$prefix"-paired-fwd.bedgraph" \
-				$coverageuniqdir/$prefix"-unpaired-fwd.bedgraph" | \
-				awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor \
-				'{print $1,$2,$3,(($4/2)+$5)*correctionFactor}' > $coverageuniqdir/$prefix"-fwd.bedgraph"
+                                bedtools unionbedg \
+                                -i \
+                                $coverageuniqdir/$prefix"-paired-fwd.bedgraph" \
+                                $coverageuniqdir/$prefix"-unpaired-fwd.bedgraph" | \
+                                awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor \
+                                '{print $1,$2,$3,(($4/2)+$5)*correctionFactor}' > $coverageuniqdir/$prefix"-fwd.bedgraph"
 
-				bedtools unionbedg \
-				-i \
-				$coverageuniqdir/$prefix"-paired-rev.bedgraph" \
-				$coverageuniqdir/$prefix"-unpaired-rev.bedgraph" | \
-				awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor \
-				'{print $1,$2,$3,(($4/2)+$5)*correctionFactor}' > $coverageuniqdir/$prefix"-rev.bedgraph"
+                                bedtools unionbedg \
+                                -i \
+                                $coverageuniqdir/$prefix"-paired-rev.bedgraph" \
+                                $coverageuniqdir/$prefix"-unpaired-rev.bedgraph" | \
+                                awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor \
+                                '{print $1,$2,$3,(($4/2)+$5)*correctionFactor}' > $coverageuniqdir/$prefix"-rev.bedgraph"
 
-				bedtools unionbedg \
-				-i \
-				$coverageuniqdir/$prefix"-paired-fwd.bedgraph" \
-				$coverageuniqdir/$prefix"-unpaired-fwd.bedgraph" | \
-				awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor -v prefix=$prefix \
-				'{print $1,$2+1,$3,prefix"-fwd",(($4/2)+$5)*correctionFactor}' > $coverageuniqdir/$prefix"-fwd.igv"
+                                bedtools unionbedg \
+                                -i \
+                                $coverageuniqdir/$prefix"-paired-fwd.bedgraph" \
+                                $coverageuniqdir/$prefix"-unpaired-fwd.bedgraph" | \
+                                awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor -v prefix=$prefix \
+                                '{print $1,$2+1,$3,prefix"-fwd",(($4/2)+$5)*correctionFactor}' > $coverageuniqdir/$prefix"-fwd.igv"
 
-				bedtools unionbedg \
-				-i \
-				$coverageuniqdir/$prefix"-paired-rev.bedgraph" \
-				$coverageuniqdir/$prefix"-unpaired-rev.bedgraph" | \
-				awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor -v prefix=$prefix \
-				'{print $1,$2+1,$3,prefix"-rev",(($4/2)+$5)*correctionFactor}' > $coverageuniqdir/$prefix"-rev.igv"
+                                bedtools unionbedg \
+                                -i \
+                                $coverageuniqdir/$prefix"-paired-rev.bedgraph" \
+                                $coverageuniqdir/$prefix"-unpaired-rev.bedgraph" | \
+                                awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor -v prefix=$prefix \
+                                '{print $1,$2+1,$3,prefix"-rev",(($4/2)+$5)*correctionFactor}' > $coverageuniqdir/$prefix"-rev.igv"
 
-			done < $miscdir/readCountsUniq.txt
-		else
-			for prefix in $prefixes ; do
-				samtools view -@ $threads -h $bamuniqdir/$prefix"-sorted.bam" | \
-				grep "^@\|YT:Z:UU" | \
-				samtools view -@ $threads -b > $coverageuniqdir/$prefix"-unpaired.bam"
+                        done < $miscdir/readCountsUniq.txt
+                else
+                        for prefix in $prefixes ; do
+                                samtools view -@ $threads -h $bamuniqdir/$prefix"-sorted.bam" | \
+                                grep "^@\|YT:Z:UU" | \
+                                samtools view -@ $threads -b > $coverageuniqdir/$prefix"-unpaired.bam"
 
-				samtools index -b $coverageuniqdir/$prefix"-unpaired.bam"
+                                samtools index -b $coverageuniqdir/$prefix"-unpaired.bam"
 
-				totalAligned=`samtools view -@ $threads $coverageuniqdir/$prefix"-unpaired.bam" | wc -l`
+                                totalAligned=`samtools view -@ $threads $coverageuniqdir/$prefix"-unpaired.bam" | wc -l`
 
-				printf "$prefix\t$totalAligned\n" >> $miscdir/readCountsUniq.txt
-			done
+                                printf "$prefix\t$totalAligned\n" >> $miscdir/readCountsUniq.txt
+                        done
 
-			maxTotalAligned=`awk -v FS="\t" -v OFS="\t" -v max=0 '{if($2 > max){max=$2}}END{print max}' $miscdir/readCountsUniq.txt`
+                        maxTotalAligned=`awk -v FS="\t" -v OFS="\t" -v max=0 '{if($2 > max){max=$2}}END{print max}' $miscdir/readCountsUniq.txt`
 
-			while IFS="	" read prefix totalAligned ; do
-				if [ "$normalize" == "y" ]; then
-					correctionFactor=`echo "scale=3; $maxTotalAligned / $totalAligned" | bc`
-				else
-					correctionFactor=1
-				fi
+                        while IFS="	" read prefix totalAligned ; do
+                                if [ "$normalize" == "y" ]; then
+                                        correctionFactor=`echo "scale=3; $maxTotalAligned / $totalAligned" | bc`
+                                else
+                                        correctionFactor=1
+                                fi
 
-				bamCoverage \
-				--numberOfProcessors $threads \
-				-b $coverageuniqdir/$prefix"-unpaired.bam" \
-				-o $coverageuniqdir/$prefix"-unpaired-fwd.bedgraph.tmp" \
-				--binSize 1 \
-				--outFileFormat bedgraph \
-				--filterRNAstrand reverse 2> /dev/null
+                                bamCoverage \
+                                --numberOfProcessors $threads \
+                                -b $coverageuniqdir/$prefix"-unpaired.bam" \
+                                -o $coverageuniqdir/$prefix"-unpaired-fwd.bedgraph.tmp" \
+                                --binSize 1 \
+                                --outFileFormat bedgraph \
+                                --filterRNAstrand reverse 2> /dev/null
 
-				bamCoverage \
-				--numberOfProcessors $threads \
-				-b $coverageuniqdir/$prefix"-unpaired.bam" \
-				-o $coverageuniqdir/$prefix"-unpaired-rev.bedgraph.tmp" \
-				--binSize 1 \
-				--outFileFormat bedgraph \
-				--filterRNAstrand forward 2> /dev/null
+                                bamCoverage \
+                                --numberOfProcessors $threads \
+                                -b $coverageuniqdir/$prefix"-unpaired.bam" \
+                                -o $coverageuniqdir/$prefix"-unpaired-rev.bedgraph.tmp" \
+                                --binSize 1 \
+                                --outFileFormat bedgraph \
+                                --filterRNAstrand forward 2> /dev/null
 
-				awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor \
-				'{print $1,$2,$3,$4*correctionFactor}' $coverageuniqdir/$prefix"-unpaired-fwd.bedgraph.tmp" > $coverageuniqdir/$prefix"-fwd.bedgraph"
+                                awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor \
+                                '{print $1,$2,$3,$4*correctionFactor}' $coverageuniqdir/$prefix"-unpaired-fwd.bedgraph.tmp" > $coverageuniqdir/$prefix"-fwd.bedgraph"
 
-				awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor \
-				'{print $1,$2,$3,$4*correctionFactor}' $coverageuniqdir/$prefix"-unpaired-rev.bedgraph.tmp" > $coverageuniqdir/$prefix"-rev.bedgraph"
+                                awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor \
+                                '{print $1,$2,$3,$4*correctionFactor}' $coverageuniqdir/$prefix"-unpaired-rev.bedgraph.tmp" > $coverageuniqdir/$prefix"-rev.bedgraph"
 
-				awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor -v prefix=$prefix \
-				'{print $1,$2+1,$3,prefix"-fwd",$4*correctionFactor}' $coverageuniqdir/$prefix"-unpaired-fwd.bedgraph.tmp" > $coverageuniqdir/$prefix"-fwd.igv"
+                                awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor -v prefix=$prefix \
+                                '{print $1,$2+1,$3,prefix"-fwd",$4*correctionFactor}' $coverageuniqdir/$prefix"-unpaired-fwd.bedgraph.tmp" > $coverageuniqdir/$prefix"-fwd.igv"
 
-				awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor -v prefix=$prefix \
-				'{print $1,$2+1,$3,prefix"-rev",$4*correctionFactor}' $coverageuniqdir/$prefix"-unpaired-rev.bedgraph.tmp" > $coverageuniqdir/$prefix"-rev.igv"
+                                awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor -v prefix=$prefix \
+                                '{print $1,$2+1,$3,prefix"-rev",$4*correctionFactor}' $coverageuniqdir/$prefix"-unpaired-rev.bedgraph.tmp" > $coverageuniqdir/$prefix"-rev.igv"
 
-			rm $coverageuniqdir/*.tmp
+                        rm $coverageuniqdir/*.tmp
 
-			done < $miscdir/readCountsUniq.txt
-		fi
+                        done < $miscdir/readCountsUniq.txt
+                fi
 
-		echo "Done!"
-	fi
+                echo "Done!"
+        fi
 fi
 
 ######################
@@ -913,62 +938,62 @@ fi
 # enriched libraries. eg. TEX+ vs TEX- which
 # allow to find primary transcripts
 if [ ! -d $tssarinputdir ] ; then
-	mkdir $tssarinputdir
+        mkdir $tssarinputdir
 
-	echo "Step 7: Creating TSSAR input files"
+        echo "Step 7: Creating TSSAR input files"
 
-	replicons=`grep ">" $miscdir/$spp".fa" | sed 's/^>//;s/ .*$//'`
+        replicons=`grep ">" $miscdir/$spp".fa" | sed 's/^>//;s/ .*$//'`
 
-	if [ "$pairedend" == "y" ] ; then
-		for prefix in $prefixes ; do
-			samtools view -@ $threads -h -b -f 0x40 $coveragedir/$prefix"-paired.bam" > $tssarinputdir/$prefix"-paired-R1.bam"
+        if [ "$pairedend" == "y" ] ; then
+                for prefix in $prefixes ; do
+                        samtools view -@ $threads -h -b -f 0x40 $coveragedir/$prefix"-paired.bam" > $tssarinputdir/$prefix"-paired-R1.bam"
 
-			samtools view -@ $threads -h -F 0x10 $coveragedir/$prefix"-unpaired.bam" | \
-			awk -v OFS="\t" -v FS="\t" '{if(/^@/){print}else{if($1 !~ /_R2$/){print}}}' | grep "^@\|XS:A:+" | \
-			samtools view -@ $threads -h -b > $tssarinputdir/$prefix"-unpaired-R1-flag0.bam"
+                        samtools view -@ $threads -h -F 0x10 $coveragedir/$prefix"-unpaired.bam" | \
+                        awk -v OFS="\t" -v FS="\t" '{if(/^@/){print}else{if($1 !~ /_R2$/){print}}}' | grep "^@\|XS:A:+" | \
+                        samtools view -@ $threads -h -b > $tssarinputdir/$prefix"-unpaired-R1-flag0.bam"
 
-			samtools view -@ $threads -h -f 0x10 $coveragedir/$prefix"-unpaired.bam" | \
-			awk -v OFS="\t" -v FS="\t" '{if(/^@/){print}else{if($1 !~ /_R2$/){print}}}' | grep "^@\|XS:A:-" | \
-			samtools view -@ $threads -h -b > $tssarinputdir/$prefix"-unpaired-R1-flag16.bam"
+                        samtools view -@ $threads -h -f 0x10 $coveragedir/$prefix"-unpaired.bam" | \
+                        awk -v OFS="\t" -v FS="\t" '{if(/^@/){print}else{if($1 !~ /_R2$/){print}}}' | grep "^@\|XS:A:-" | \
+                        samtools view -@ $threads -h -b > $tssarinputdir/$prefix"-unpaired-R1-flag16.bam"
 
-			samtools merge \
-			-@ $threads \
-			$tssarinputdir/$prefix"-tssar-input.bam" \
-			$tssarinputdir/$prefix"-paired-R1.bam" \
-			$tssarinputdir/$prefix"-unpaired-R1-flag0.bam" \
-			$tssarinputdir/$prefix"-unpaired-R1-flag16.bam" 2> /dev/null
+                        samtools merge \
+                        -@ $threads \
+                        $tssarinputdir/$prefix"-tssar-input.bam" \
+                        $tssarinputdir/$prefix"-paired-R1.bam" \
+                        $tssarinputdir/$prefix"-unpaired-R1-flag0.bam" \
+                        $tssarinputdir/$prefix"-unpaired-R1-flag16.bam" 2> /dev/null
 
-			for replicon in $replicons ; do
-				samtools view -@ $threads -h $tssarinputdir/$prefix"-tssar-input.bam" | \
-				grep "^@HD	VN:1.0	SO:coordinate\|^@SQ	SN:$replicon\|^@PG	ID:hisat2	PN:hisat2\|	$replicon	" | \
-				samtools view -@ $threads -b > $tssarinputdir/$prefix"-tssar-input-"$replicon".bam"
-			done
-		done
-	else
-		for prefix in $prefixes ; do
-			samtools view -@ $threads -h -F 0x10 $coveragedir/$prefix"-unpaired.bam" | \
-			awk -v OFS="\t" -v FS="\t" '{if(/^@/){print}else{if($1 !~ /_R2$/){print}}}' | grep "^@\|XS:A:+" | \
-			samtools view -@ $threads -h -b > $tssarinputdir/$prefix"-unpaired-R1-flag0.bam"
+                        for replicon in $replicons ; do
+                                samtools view -@ $threads -h $tssarinputdir/$prefix"-tssar-input.bam" | \
+                                grep "^@HD	VN:1.0	SO:coordinate\|^@SQ	SN:$replicon\|^@PG	ID:hisat2	PN:hisat2\|	$replicon	" | \
+                                samtools view -@ $threads -b > $tssarinputdir/$prefix"-tssar-input-"$replicon".bam"
+                        done
+                done
+        else
+                for prefix in $prefixes ; do
+                        samtools view -@ $threads -h -F 0x10 $coveragedir/$prefix"-unpaired.bam" | \
+                        awk -v OFS="\t" -v FS="\t" '{if(/^@/){print}else{if($1 !~ /_R2$/){print}}}' | grep "^@\|XS:A:+" | \
+                        samtools view -@ $threads -h -b > $tssarinputdir/$prefix"-unpaired-R1-flag0.bam"
 
-			samtools view -@ $threads -h -f 0x10 $coveragedir/$prefix"-unpaired.bam" | \
-			awk -v OFS="\t" -v FS="\t" '{if(/^@/){print}else{if($1 !~ /_R2$/){print}}}' | grep "^@\|XS:A:-" | \
-			samtools view -@ $threads -h -b > $tssarinputdir/$prefix"-unpaired-R1-flag16.bam"
+                        samtools view -@ $threads -h -f 0x10 $coveragedir/$prefix"-unpaired.bam" | \
+                        awk -v OFS="\t" -v FS="\t" '{if(/^@/){print}else{if($1 !~ /_R2$/){print}}}' | grep "^@\|XS:A:-" | \
+                        samtools view -@ $threads -h -b > $tssarinputdir/$prefix"-unpaired-R1-flag16.bam"
 
-			samtools merge \
-			-@ $threads \
-			$tssarinputdir/$prefix"-tssar-input.bam" \
-			$tssarinputdir/$prefix"-unpaired-R1-flag0.bam" \
-			$tssarinputdir/$prefix"-unpaired-R1-flag16.bam" 2> /dev/null
+                        samtools merge \
+                        -@ $threads \
+                        $tssarinputdir/$prefix"-tssar-input.bam" \
+                        $tssarinputdir/$prefix"-unpaired-R1-flag0.bam" \
+                        $tssarinputdir/$prefix"-unpaired-R1-flag16.bam" 2> /dev/null
 
-			for replicon in $replicons ; do
-				samtools view -@ $threads -h $tssarinputdir/$prefix"-tssar-input.bam" | \
-				grep "^@HD	VN:1.0	SO:coordinate\|^@SQ	SN:$replicon\|^@PG	ID:hisat2	PN:hisat2\|	$replicon	" | \
-				samtools view -@ $threads -b > $tssarinputdir/$prefix"-tssar-input-"$replicon".bam"
-			done
-		done
-	fi
+                        for replicon in $replicons ; do
+                                samtools view -@ $threads -h $tssarinputdir/$prefix"-tssar-input.bam" | \
+                                grep "^@HD	VN:1.0	SO:coordinate\|^@SQ	SN:$replicon\|^@PG	ID:hisat2	PN:hisat2\|	$replicon	" | \
+                                samtools view -@ $threads -b > $tssarinputdir/$prefix"-tssar-input-"$replicon".bam"
+                        done
+                done
+        fi
 
-	echo "Done!"
+        echo "Done!"
 fi
 
 ######################
@@ -979,70 +1004,70 @@ fi
 # this could help to infer transcription start sites or persistent
 # transcripts (resistant to degradation) when combined to 3 prime profiles
 if [ ! -d $fiveprimedir ] ; then
-	mkdir $fiveprimedir
+        mkdir $fiveprimedir
 
-	echo "Step 8: Creating five prime profiling files"
+        echo "Step 8: Creating five prime profiling files"
 
-	if [ "$pairedend" == "y" ] ; then
-		for prefix in $prefixes ; do
-			bedtools genomecov -5 -strand + -bga -ibam $tssarinputdir/$prefix"-paired-R1.bam" > $fiveprimedir/$prefix"-5primeprofile-paired-fwd.bedgraph"
+        if [ "$pairedend" == "y" ] ; then
+                for prefix in $prefixes ; do
+                        bedtools genomecov -5 -strand + -bga -ibam $tssarinputdir/$prefix"-paired-R1.bam" > $fiveprimedir/$prefix"-5primeprofile-paired-fwd.bedgraph"
 
-			bedtools genomecov -5 -strand - -bga -ibam $tssarinputdir/$prefix"-paired-R1.bam" > $fiveprimedir/$prefix"-5primeprofile-paired-rev.bedgraph"
+                        bedtools genomecov -5 -strand - -bga -ibam $tssarinputdir/$prefix"-paired-R1.bam" > $fiveprimedir/$prefix"-5primeprofile-paired-rev.bedgraph"
 
-			bedtools genomecov -5 -strand + -bga -ibam $tssarinputdir/$prefix"-unpaired-R1-flag0.bam" > $fiveprimedir/$prefix"-5primeprofile-unpaired-fwd.bedgraph"
+                        bedtools genomecov -5 -strand + -bga -ibam $tssarinputdir/$prefix"-unpaired-R1-flag0.bam" > $fiveprimedir/$prefix"-5primeprofile-unpaired-fwd.bedgraph"
 
-			bedtools genomecov -5 -strand - -bga -ibam $tssarinputdir/$prefix"-unpaired-R1-flag16.bam" > $fiveprimedir/$prefix"-5primeprofile-unpaired-rev.bedgraph"
-		done
+                        bedtools genomecov -5 -strand - -bga -ibam $tssarinputdir/$prefix"-unpaired-R1-flag16.bam" > $fiveprimedir/$prefix"-5primeprofile-unpaired-rev.bedgraph"
+                done
 
-		maxTotalAligned=`awk -v FS="\t" -v OFS="\t" -v max=0 '{if($2 > max){max=$2}}END{print max}' $miscdir/readCounts.txt`
+                maxTotalAligned=`awk -v FS="\t" -v OFS="\t" -v max=0 '{if($2 > max){max=$2}}END{print max}' $miscdir/readCounts.txt`
 
-		while IFS="	" read prefix totalAligned ; do
+                while IFS="	" read prefix totalAligned ; do
 
-			if [ "$normalize" == "y" ]; then
+                        if [ "$normalize" == "y" ]; then
                                 correctionFactor=`echo "scale=3; $maxTotalAligned / $totalAligned" | bc`
                         else
                                 correctionFactor=1
                         fi
 
-			bedtools unionbedg \
-			-i \
-			$fiveprimedir/$prefix"-5primeprofile-paired-fwd.bedgraph" \
-			$fiveprimedir/$prefix"-5primeprofile-unpaired-fwd.bedgraph" | \
-			awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor \
-			'{print $1,$2,$3,($4+$5)*correctionFactor}' > $fiveprimedir/$prefix"-5primeprofile-fwd.bedgraph"
+                        bedtools unionbedg \
+                        -i \
+                        $fiveprimedir/$prefix"-5primeprofile-paired-fwd.bedgraph" \
+                        $fiveprimedir/$prefix"-5primeprofile-unpaired-fwd.bedgraph" | \
+                        awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor \
+                        '{print $1,$2,$3,($4+$5)*correctionFactor}' > $fiveprimedir/$prefix"-5primeprofile-fwd.bedgraph"
 
-			bedtools unionbedg \
-			-i \
-			$fiveprimedir/$prefix"-5primeprofile-paired-rev.bedgraph" \
-			$fiveprimedir/$prefix"-5primeprofile-unpaired-rev.bedgraph" | \
-			awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor \
-			'{print $1,$2,$3,($4+$5)*correctionFactor}' > $fiveprimedir/$prefix"-5primeprofile-rev.bedgraph"
+                        bedtools unionbedg \
+                        -i \
+                        $fiveprimedir/$prefix"-5primeprofile-paired-rev.bedgraph" \
+                        $fiveprimedir/$prefix"-5primeprofile-unpaired-rev.bedgraph" | \
+                        awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor \
+                        '{print $1,$2,$3,($4+$5)*correctionFactor}' > $fiveprimedir/$prefix"-5primeprofile-rev.bedgraph"
 
-		done < $miscdir/readCounts.txt
+                done < $miscdir/readCounts.txt
 
-	else
-		maxTotalAligned=`awk -v FS="\t" -v OFS="\t" -v max=0 '{if($2 > max){max=$2}}END{print max}' $miscdir/readCounts.txt`
+        else
+                maxTotalAligned=`awk -v FS="\t" -v OFS="\t" -v max=0 '{if($2 > max){max=$2}}END{print max}' $miscdir/readCounts.txt`
 
-		while IFS="	" read prefix totalAligned ; do
+                while IFS="	" read prefix totalAligned ; do
 
-			if [ "$normalize" == "y" ]; then
+                        if [ "$normalize" == "y" ]; then
                                 correctionFactor=`echo "scale=3; $maxTotalAligned / $totalAligned" | bc`
                         else
                                 correctionFactor=1
                         fi
 
-			bedtools genomecov -5 -strand + -bga -ibam $tssarinputdir/$prefix"-unpaired-R1-flag0.bam" | \
-			awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor \
-			'{print $1,$2,$3,$4*correctionFactor}' > $fiveprimedir/$prefix"-5primeprofile-fwd.bedgraph"
+                        bedtools genomecov -5 -strand + -bga -ibam $tssarinputdir/$prefix"-unpaired-R1-flag0.bam" | \
+                        awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor \
+                        '{print $1,$2,$3,$4*correctionFactor}' > $fiveprimedir/$prefix"-5primeprofile-fwd.bedgraph"
 
-			bedtools genomecov -5 -strand - -bga -ibam $tssarinputdir/$prefix"-unpaired-R1-flag16.bam" | \
-			awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor \
-			'{print $1,$2,$3,$4*correctionFactor}' > $fiveprimedir/$prefix"-5primeprofile-rev.bedgraph"
+                        bedtools genomecov -5 -strand - -bga -ibam $tssarinputdir/$prefix"-unpaired-R1-flag16.bam" | \
+                        awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor \
+                        '{print $1,$2,$3,$4*correctionFactor}' > $fiveprimedir/$prefix"-5primeprofile-rev.bedgraph"
 
-		done < $miscdir/readCounts.txt
-	fi
+                done < $miscdir/readCounts.txt
+        fi
 
-	echo "Done!"
+        echo "Done!"
 fi
 
 ######################
@@ -1056,86 +1081,85 @@ fi
 # read on the opposite strand (note that R2 comes from an artificial
 # complementary DNA synthesized based on the real RNA molecule)
 if [ ! -d $threeprimedir ] ; then
-	mkdir $threeprimedir
+        mkdir $threeprimedir
 
-	echo "Step 9: Creating three prime profiling files"
+        echo "Step 9: Creating three prime profiling files"
 
-	if [ "$pairedend" == "y" ] ; then
-		for prefix in $prefixes ; do
-			samtools view -@ $threads -h -b -f 0x80 $coveragedir/$prefix"-paired.bam" | \
-			bedtools genomecov -5 -strand - -bga -ibam stdin > $threeprimedir/$prefix"-3primeprofile-paired-fwd.bedgraph"
+        if [ "$pairedend" == "y" ] ; then
+                for prefix in $prefixes ; do
+                        samtools view -@ $threads -h -b -f 0x80 $coveragedir/$prefix"-paired.bam" | \
+                        bedtools genomecov -5 -strand - -bga -ibam stdin > $threeprimedir/$prefix"-3primeprofile-paired-fwd.bedgraph"
 
-			samtools view -@ $threads -h -b -f 0x80 $coveragedir/$prefix"-paired.bam" | \
-			bedtools genomecov -5 -strand + -bga -ibam stdin > $threeprimedir/$prefix"-3primeprofile-paired-rev.bedgraph"
+                        samtools view -@ $threads -h -b -f 0x80 $coveragedir/$prefix"-paired.bam" | \
+                        bedtools genomecov -5 -strand + -bga -ibam stdin > $threeprimedir/$prefix"-3primeprofile-paired-rev.bedgraph"
 
-			samtools view -@ $threads -h -F 0x10 $coveragedir/$prefix"-unpaired.bam" | \
-			awk -v OFS="\t" -v FS="\t" '{if(/^@/){print}else{if($1 ~ /_R2$/){print}}}' | grep "^@\|XS:A:+" | \
-			samtools view -@ $threads -h -b | \
-			bedtools genomecov -3 -strand + -bga -ibam stdin > $threeprimedir/$prefix"-3primeprofile-unpaired-fwd.bedgraph"
+                        samtools view -@ $threads -h -F 0x10 $coveragedir/$prefix"-unpaired.bam" | \
+                        awk -v OFS="\t" -v FS="\t" '{if(/^@/){print}else{if($1 ~ /_R2$/){print}}}' | grep "^@\|XS:A:+" | \
+                        samtools view -@ $threads -h -b | \
+                        bedtools genomecov -3 -strand + -bga -ibam stdin > $threeprimedir/$prefix"-3primeprofile-unpaired-fwd.bedgraph"
 
-			samtools view -@ $threads -h -f 0x10 $coveragedir/$prefix"-unpaired.bam" | \
-			awk -v OFS="\t" -v FS="\t" '{if(/^@/){print}else{if($1 ~ /_R2$/){print}}}' | grep "^@\|XS:A:-" | \
-			samtools view -@ $threads -h -b | \
-			bedtools genomecov -3 -strand - -bga -ibam stdin > $threeprimedir/$prefix"-3primeprofile-unpaired-rev.bedgraph"
-		done
+                        samtools view -@ $threads -h -f 0x10 $coveragedir/$prefix"-unpaired.bam" | \
+                        awk -v OFS="\t" -v FS="\t" '{if(/^@/){print}else{if($1 ~ /_R2$/){print}}}' | grep "^@\|XS:A:-" | \
+                        samtools view -@ $threads -h -b | \
+                        bedtools genomecov -3 -strand - -bga -ibam stdin > $threeprimedir/$prefix"-3primeprofile-unpaired-rev.bedgraph"
+                done
 
-		maxTotalAligned=`awk -v FS="\t" -v OFS="\t" -v max=0 '{if($2 > max){max=$2}}END{print max}' $miscdir/readCounts.txt`
+                maxTotalAligned=`awk -v FS="\t" -v OFS="\t" -v max=0 '{if($2 > max){max=$2}}END{print max}' $miscdir/readCounts.txt`
 
-		while IFS="	" read prefix totalAligned ; do
+                while IFS="	" read prefix totalAligned ; do
 
-			if [ "$normalize" == "y" ]; then
+                        if [ "$normalize" == "y" ]; then
                                 correctionFactor=`echo "scale=3; $maxTotalAligned / $totalAligned" | bc`
                         else
                                 correctionFactor=1
                         fi
 
-			bedtools unionbedg \
-			-i \
-			$threeprimedir/$prefix"-3primeprofile-paired-fwd.bedgraph" \
-			$threeprimedir/$prefix"-3primeprofile-unpaired-fwd.bedgraph" | \
-			awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor \
-			'{print $1,$2,$3,($4+$5)*correctionFactor}' > $threeprimedir/$prefix"-3primeprofile-fwd.bedgraph"
+                        bedtools unionbedg \
+                        -i \
+                        $threeprimedir/$prefix"-3primeprofile-paired-fwd.bedgraph" \
+                        $threeprimedir/$prefix"-3primeprofile-unpaired-fwd.bedgraph" | \
+                        awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor \
+                        '{print $1,$2,$3,($4+$5)*correctionFactor}' > $threeprimedir/$prefix"-3primeprofile-fwd.bedgraph"
 
-			bedtools unionbedg \
-			-i \
-			$threeprimedir/$prefix"-3primeprofile-paired-rev.bedgraph" \
-			$threeprimedir/$prefix"-3primeprofile-unpaired-rev.bedgraph" | \
-			awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor \
-			'{print $1,$2,$3,($4+$5)*correctionFactor}' > $threeprimedir/$prefix"-3primeprofile-rev.bedgraph"
+                        bedtools unionbedg \
+                        -i \
+                        $threeprimedir/$prefix"-3primeprofile-paired-rev.bedgraph" \
+                        $threeprimedir/$prefix"-3primeprofile-unpaired-rev.bedgraph" | \
+                        awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor \
+                        '{print $1,$2,$3,($4+$5)*correctionFactor}' > $threeprimedir/$prefix"-3primeprofile-rev.bedgraph"
 
-		done < $miscdir/readCounts.txt
-	else
+                done < $miscdir/readCounts.txt
+        else
 
-		maxTotalAligned=`awk -v FS="\t" -v OFS="\t" -v max=0 '{if($2 > max){max=$2}}END{print max}' $miscdir/readCounts.txt`
+                maxTotalAligned=`awk -v FS="\t" -v OFS="\t" -v max=0 '{if($2 > max){max=$2}}END{print max}' $miscdir/readCounts.txt`
 
-		while IFS="	" read prefix totalAligned ; do
+                while IFS="	" read prefix totalAligned ; do
 
-			if [ "$normalize" == "y" ]; then
+                        if [ "$normalize" == "y" ]; then
                                 correctionFactor=`echo "scale=3; $maxTotalAligned / $totalAligned" | bc`
                         else
                                 correctionFactor=1
                         fi
 
-			samtools view -@ $threads -h -F 0x10 $coveragedir/$prefix"-unpaired.bam" | \
-			grep "^@\|XS:A:+" | \
-			samtools view -@ $threads -h -b | \
-			bedtools genomecov -3 -strand + -bga -ibam stdin | \
-			awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor \
-			'{print $1,$2,$3,$4*correctionFactor}' > $threeprimedir/$prefix"-3primeprofile-unpaired-fwd.bedgraph"
+                samtools view -@ $threads -h -F 0x10 $coveragedir/$prefix"-unpaired.bam" | \
+                grep "^@\|XS:A:+" | \
+                samtools view -@ $threads -h -b | \
+                bedtools genomecov -3 -strand + -bga -ibam stdin | \
+                awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor \
+                '{print $1,$2,$3,$4*correctionFactor}' > $threeprimedir/$prefix"-3primeprofile-unpaired-fwd.bedgraph"
 
-			samtools view -@ $threads -h -f 0x10 $coveragedir/$prefix"-unpaired.bam" | \
-			grep "^@\|XS:A:-" | \
-			samtools view -@ $threads -h -b | \
-			bedtools genomecov -3 -strand - -bga -ibam stdin | \
-			awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor \
-			'{print $1,$2,$3,$4*correctionFactor}' > $threeprimedir/$prefix"-3primeprofile-unpaired-rev.bedgraph"
+                samtools view -@ $threads -h -f 0x10 $coveragedir/$prefix"-unpaired.bam" | \
+                grep "^@\|XS:A:-" | \
+                samtools view -@ $threads -h -b | \
+                bedtools genomecov -3 -strand - -bga -ibam stdin | \
+                awk -v FS="\t" -v OFS="\t" -v correctionFactor=$correctionFactor \
+                '{print $1,$2,$3,$4*correctionFactor}' > $threeprimedir/$prefix"-3primeprofile-unpaired-rev.bedgraph"
 
-		done < $miscdir/readCounts.txt
-	fi
+                done < $miscdir/readCounts.txt
+        fi
 
-	echo "Done!"
+        echo "Done!"
 fi
-
 
 # continuing the help if-else statement
 else
@@ -1147,6 +1171,7 @@ echo '
 bash frtc.sh <threads> <maxfragsize> <read_size> <spp> <url>
 
 threads [INT]:     number of threads to be passed to nested programs
+                   maximum value: 99
 
 maxfragsize [INT]: maximum insert size from the leftmost end to
                    the rightmost of an paired-end alignment.
@@ -1174,11 +1199,11 @@ there is a directory tree prerequisite to run frtc.
 an adequate directory tree to run frtc must look like
 
 yourDirectory
-├── removeInconsistentPairs.R			# provided
-├── frtc.sh					# provided
-├── misc					# notProvided
+├── removeInconsistentPairs.R      # provided
+├── frtc.sh                        # provided
+├── misc                           # notProvided
 │   └── adap.fa
-└── raw 					# notProvided
+└── raw                            # notProvided
     ├── S1_R1.fastq.gz
     ├── S1_R2.fastq.gz
     ├── S2_R1.fastq.gz
@@ -1295,4 +1320,5 @@ those modules (or steps) are summarized below:
 8. creating five prime profiling coverage (bedgraph format) using bedtools
 9. creating three prime profiling coverage (bedgraph format) using bedtools
 '
+
 fi

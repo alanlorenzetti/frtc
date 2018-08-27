@@ -57,6 +57,7 @@ Those modules (or steps) are summarized below:
 bash frtc.sh <threads> <maxfragsize> <read_size> <spp> <url>
 
 threads [INT]:     number of threads to be passed to nested programs
+                   maximum value: 99
 
 maxfragsize [INT]: maximum insert size from the leftmost end to
                    the rightmost of an paired-end alignment.
