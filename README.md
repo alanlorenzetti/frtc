@@ -34,6 +34,7 @@ start position (@ fiveprime directory)                    R2
 Be aware this feature doesn't work for dUTP library preparations and be aware that uniq mode is not supported for fiveprime, threeprime and TSSAR input results.  
 
 This pipeline was conceived to process prokaryotic RNA-Seq data, so by default spliced alignments are not allowed. Feel free to adapt and test it using eukaryotic datasets and let me know if everything is working well.  
+
 ---
 
 Furthermore, it will filter bam files in order to keep only the R1 files, for they are useful to find TSS in dRNA-Seq experiments (e.g. TEXminus vs. TEXplus experiments) the filtered bams are placed within tssarinput directory.  
