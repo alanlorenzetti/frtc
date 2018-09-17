@@ -2,7 +2,7 @@
 
 ## Purpose and General Information
 
-This script will perform every task from trimming Illumina RNA-Seq raw data (fastq.gz files) to write coverage files (bedgraph and IGV files). It also counts the start position of reads and end position if a paired-end experiment is supplied:
+This script will perform every task from trimming **prokaryotic** Illumina RNA-Seq raw data (fastq.gz files) to write coverage files (bedgraph and IGV files). It also counts the start position of reads and end position if a paired-end experiment is supplied:
 
 ```
 single-end
@@ -33,9 +33,10 @@ start position (@ fiveprime directory)                    R2
 
 Be aware this feature doesn't work for dUTP library preparations and be aware that uniq mode is not supported for fiveprime, threeprime and TSSAR input results.  
 
+This pipeline was conceived to process prokaryotic RNA-Seq data, so by default spliced alignments are not allowed. Feel free to adapt and test it using eukaryotic datasets and let me know if everything is working well.  
 ---
 
-Furthermore, it will filter bam files in order to keep only the R1 files, for they are useful to find TSS in dRNASeq experiments (e.g. TEXminus vs. TEXplus experiments) the filtered bams are placed within tssarinput directory.  
+Furthermore, it will filter bam files in order to keep only the R1 files, for they are useful to find TSS in dRNA-Seq experiments (e.g. TEXminus vs. TEXplus experiments) the filtered bams are placed within tssarinput directory.  
 
 This program features a few modules. Each step usually relies on the previous one, but they will be executed only if the output directory is not created. This is a simple way to enable the rerun of the late steps without starting from the beginning.  
 

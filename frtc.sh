@@ -4,7 +4,7 @@
 # built and tested on Ubuntu 16.04.3 LTS 64bit
 # also tested on Debian GNU/Linux jessie/sid and Ubuntu 18.04.1
 
-version=0.6.0
+version=0.6.1
 lastupdate=20180827
 
 # please, check the README.md file before using this script
@@ -126,7 +126,7 @@ fi
 # PROGRAM STAMP
 ####################################
 echo "From Raw To Coverage (frtc):
-A tool to process Illumina RNASeq data.
+A tool to process Illumina RNA-Seq data.
 Version: $version
 Last update: $lastupdate"
 
@@ -1266,8 +1266,8 @@ all the prerequisites will be checked before running
 # PURPOSE AND GENERAL INFO
 ###################################
 
-this script will perform every task
-from trimming Illumina RNASeq raw data (fastq files)
+this script will perform every task from trimming
+prokaryotic Illumina RNA-Seq raw data (fastq.gz files)
 to write coverage files (bedgraph and IGV files)
 
 it also counts the start position of reads
@@ -1295,11 +1295,16 @@ start position (@ fiveprime directory)                    R2
 be aware this feature doesnt work for dUTP library preparations;
 be aware that uniq mode is not supported for
 fiveprime, threeprime and TSSAR input results
+
+This pipeline was conceived to process prokaryotic RNA-Seq data,
+so by default spliced alignments are not allowed. Feel free to
+adapt and test it using eukaryotic datasets and let me know if
+everything is working well.
 ---------------------------------------------------------------
 
 furthermore, it will filter bam files in order to keep
 only the R1 files, for they are useful to find TSS
-in dRNASeq experiments (e.g. TEXminus vs. TEXplus experiments)
+in dRNA-Seq experiments (e.g. TEXminus vs. TEXplus experiments)
 the filtered bams are placed within tssarinput directory
 
 there are a few modules.
