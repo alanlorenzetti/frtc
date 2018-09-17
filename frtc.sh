@@ -5,7 +5,7 @@
 # also tested on Debian GNU/Linux jessie/sid and Ubuntu 18.04.1
 
 version=0.6.1
-lastupdate=20180827
+lastupdate=20180917
 
 # please, check the README.md file before using this script
 # there is also a version of the manual on the end of this file
