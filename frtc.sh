@@ -52,7 +52,7 @@ this command line will run frtc.sh with six threads,
 with a maximum insert size of 1000, with read size of 150 nt,
 creating Hsalinarum.fa and Hsalinarum.gff files under misc
 directory to store genome and annotation, respectively.
-
+ 
 Check the extended documentation using: ./frtc.sh --help
 
 " && exit 1
