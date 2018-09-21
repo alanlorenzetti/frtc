@@ -141,6 +141,11 @@ bedtools v2.26.0 (also tested with v2.21.0) (@ PATH)
 
 All the prerequisites will be checked before start the processing.
 
+## Citation
+
+If you make use of frtc in your research, please cite:  
+
+[ten-Caten, F., Vencio, R. Z., Lorenzetti, A. P., Zaramela, L. S., Santana, A. C., & Koide, T. (2018). Internal RNAs overlapping coding sequences can drive the production of alternative proteins in archaea. RNA Biology.](http://dx.doi.org/10.1080/15476286.2018.1509661)
 ```
    __o
  _ \<_

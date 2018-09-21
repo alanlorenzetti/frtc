@@ -1324,6 +1324,15 @@ those modules (or steps) are summarized below:
 7. creating TSSAR input BAM files
 8. creating five prime profiling coverage (bedgraph format) using bedtools
 9. creating three prime profiling coverage (bedgraph format) using bedtools
+
+###################################
+# CITATION
+###################################
+
+If you make use of frtc in your research, please cite:  
+
+ten-Caten, F., Vencio, R. Z., Lorenzetti, A. P., Zaramela, L. S., Santana, A. C., & Koide, T. (2018). Internal RNAs overlapping coding sequences can drive the production of alternative proteins in archaea. RNA Biology.
+http://dx.doi.org/10.1080/15476286.2018.1509661
 '
 
 fi
