@@ -69,9 +69,9 @@ maxfragsize [INT]: maximum insert size from the leftmost end to
 read_size [INT]:   approximate size of reads. For an Illumina paired-end
                    experiment of 150x2 cycles, use 150.
 
-spp [CHAR]:        prefix for genome and annotation files
+spp [VARCHAR]:     prefix for genome and annotation files
 
-url [CHAR]:        URL pointing to the genome file in NCBI RefSeq FTP Server.
+url [VARCHAR]:     URL pointing to the genome file in NCBI RefSeq FTP Server.
                    One may find the link for RefSeq directory on the top right
                    corner of the NCBI Assembly page for a given genome.
 ```
