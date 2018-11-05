@@ -239,10 +239,10 @@ if [ ! -d $samdir ] ; then
                 # it will remove region features from GFF, for they are annoying
                 # to observe on genome browser
                 echo "Downloading genome"
-                curl $url 2> /dev/null | zcat > $miscdir/$spp".fa"
+                curl -u anonymous: $url 2> /dev/null | zcat > $miscdir/$spp".fa" || { echo >&2 "Genome file download failed. Aborting" ; exit 1; }
                 echo "Downloading annotation"
-                curl $urlannot 2> /dev/null | zcat | \
-                awk -v OFS="\t" -v FS="\t" '{if(/^#/){print}else{if($3 != "region"){print}}}' > $miscdir/$spp".gff"
+                curl -u anonumous: $urlannot 2> /dev/null | zcat | \
+                awk -v OFS="\t" -v FS="\t" '{if(/^#/){print}else{if($3 != "region"){print}}}' > $miscdir/$spp".gff" || { echo >&2 "Annotation file download failed. Aborting" ; exit 1; }
                 echo "Building HISAT2 index"
                 hisat2-build $miscdir/$spp".fa" $miscdir/$spp > /dev/null 2>&1
                 echo "Done!"
