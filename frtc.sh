@@ -241,7 +241,7 @@ if [ ! -d $samdir ] ; then
                 echo "Downloading genome"
                 curl -u anonymous: $url 2> /dev/null | zcat > $miscdir/$spp".fa" || { echo >&2 "Genome file download failed. Aborting" ; exit 1; }
                 echo "Downloading annotation"
-                curl -u anonumous: $urlannot 2> /dev/null | zcat | \
+                curl -u anonymous: $urlannot 2> /dev/null | zcat | \
                 awk -v OFS="\t" -v FS="\t" '{if(/^#/){print}else{if($3 != "region"){print}}}' > $miscdir/$spp".gff" || { echo >&2 "Annotation file download failed. Aborting" ; exit 1; }
                 echo "Building HISAT2 index"
                 hisat2-build $miscdir/$spp".fa" $miscdir/$spp > /dev/null 2>&1
