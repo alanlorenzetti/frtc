@@ -4,8 +4,8 @@
 # built and tested on Ubuntu 16.04.3 LTS 64bit
 # also tested on Debian GNU/Linux jessie/sid and Ubuntu 18.04.1
 
-version=0.6.2
-lastupdate=20180921
+version=0.6.3
+lastupdate=20190111
 
 # please, check the README.md file before using this script
 # there is also a version of the manual on the end of this file
