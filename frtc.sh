@@ -52,7 +52,7 @@ this command line will run frtc.sh with six threads,
 with a maximum insert size of 1000, with read size of 150 nt,
 creating Hsalinarum.fa and Hsalinarum.gff files under misc
 directory to store genome and annotation, respectively.
- 
+
 Check the extended documentation using: ./frtc.sh --help
 
 " && exit 1
@@ -596,7 +596,7 @@ if [ ! -d $coveragedir ] ; then
                                 R -q -f ./removeInconsistentPairs.R --args $coveragedir/$prefix"-paired_tmp"$tmpfile".bam" > /dev/null &
                         done
                         wait
-                        
+
                         find $coveragedir -name "*tmp*adjusted.bam" -exec \
                         samtools merge -@ $threads -n $coveragedir/$prefix"-paired-adjusted.bam" {} + 
 
@@ -606,12 +606,12 @@ if [ ! -d $coveragedir ] ; then
                         samtools sort -@ $threads $coveragedir/$prefix"-paired-adjusted.bam" > $coveragedir/$prefix"-paired.bam"
                         failreads=`samtools view -@ $threads $coveragedir/$prefix"-paired-failPairs.bam" | wc -l`
                         failpairs=`echo "$failreads/2" | bc`
-                        echo "$prefix has $failpairs pair(s) containing reads that do(es) not match each other. Removing."
+                        echo "$prefix has $failpairs pair(s) containing reads that do not match each other. Removing."
 
                         rm $coveragedir/$prefix"-paired.sam"
                         rm $coveragedir/$prefix*tmp*
                         rm $coveragedir/$prefix"-paired-adjusted.bam" $coveragedir/$prefix"-paired-failPairs.bam"
-                        
+
                         samtools index -b $coveragedir/$prefix"-paired.bam"
                         samtools index -b $coveragedir/$prefix"-unpaired.bam"
 
