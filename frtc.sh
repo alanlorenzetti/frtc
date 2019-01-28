@@ -21,6 +21,7 @@ if [ "$1" != "--help" ] ; then
 if [ $# -ne 5 ] ; then echo "
 From Raw To Coverage (frtc):
 A tool to process Illumina RNA-Seq data.
+https://github.com/alanlorenzetti/frtc
 Version: $version
 Last update: $lastupdate
 
@@ -127,6 +128,7 @@ fi
 ####################################
 echo "From Raw To Coverage (frtc):
 A tool to process Illumina RNA-Seq data.
+https://github.com/alanlorenzetti/frtc
 Version: $version
 Last update: $lastupdate"
 

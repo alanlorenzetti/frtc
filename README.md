@@ -92,9 +92,9 @@ yourDirectory
 ├── removeInconsistentPairs.R	provided
 ├── frtc.sh			provided
 ├── misc			notProvided
-│   └── adap.fa			
+│   └── adap.fa
 └── raw				notProvided
-    ├── S1_R1.fastq.gz		
+    ├── S1_R1.fastq.gz
     ├── S1_R2.fastq.gz
     ├── S2_R1.fastq.gz
     ├── S2_R2.fastq.gz
