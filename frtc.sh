@@ -156,7 +156,7 @@ done
 
 R --slave -e 'if(!require("rbamtools", quietly=T)){quit(save="no", status=1)}else{quit(save="no", status=0)}'
 if [ $? == 1 ] ; then echo >&2 "rbamtools package is not installed. Aborting" ; exit 1 ; fi
-if [ ! -e /opt/Trimmomatic-0.36/trimmomatic-0.36.jar ] ; then echo >&2 "trimmomatic is not installed. Aborting" ; exit 1; fi
+if [ ! -e /opt/Trimmomatic-0.39/trimmomatic-0.39.jar ] ; then echo >&2 "trimmomatic is not installed. Aborting" ; exit 1; fi
 
 # checking scripts
 if [ ! -e removeInconsistentPairs.R ] && [ "$pairedend" == "y" ] ; then echo >&2 "Missing removeInconsistentPairs.R script. Aborting" ; exit 1 ; fi
@@ -198,7 +198,7 @@ if [ ! -d $trimmeddir ] ; then
                         outunpairedR2=$trimmeddir/$prefix"-unpaired_R2.fastq.gz"
                         logfile=$trimmeddir/$prefix".log"
 
-                        java -jar /opt/Trimmomatic-0.36/trimmomatic-0.36.jar PE \
+                        java -jar /opt/Trimmomatic-0.39/trimmomatic-0.39.jar PE \
                         -threads $threads \
                         $R1 $R2 \
                         $outpairedR1 $outunpairedR1 \
@@ -214,7 +214,7 @@ if [ ! -d $trimmeddir ] ; then
                         outunpairedR1=$trimmeddir/$prefix"-unpaired_R1.fastq.gz"
                         logfile=$trimmeddir/$prefix".log"
 
-                        java -jar /opt/Trimmomatic-0.36/trimmomatic-0.36.jar SE \
+                        java -jar /opt/Trimmomatic-0.39/trimmomatic-0.39.jar SE \
                         -threads $threads \
                         $R1 \
                         $outunpairedR1 \
@@ -1254,7 +1254,7 @@ furthermore, you have to install manually the program requisites.
 maybe newer versions are compatible, but these were the ones used
 to build and test this script:
 
-trimmomatic v0.36 (must be located @ /opt/Trimmomatic-0.36/trimmomatic-0.36.jar)
+trimmomatic v0.39 (must be located @ /opt/Trimmomatic-0.39/trimmomatic-0.39.jar)
 hisat2 v2.1.0 (@ PATH)
 curl v7.58.0 (@ PATH)
 samtools v1.7 (@ PATH)

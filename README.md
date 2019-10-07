@@ -131,7 +131,7 @@ GATCGTCGGACTGTAGAACTCTGAACGTGTAGA
 
 Furthermore, you have to install manually the program requisites. Maybe newer versions are compatible, but these were the ones used to build and test this script:  
 
-* trimmomatic v0.36 (must be located @ /opt/Trimmomatic-0.36/trimmomatic-0.36.jar)  
+* trimmomatic v0.39 (must be located @ /opt/Trimmomatic-0.39/trimmomatic-0.39.jar)  
 * hisat2 v2.1.0 (@ PATH)  
 * curl v7.58.0 (@ PATH)  
 * samtools v1.7 (@ PATH)  
