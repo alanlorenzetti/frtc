@@ -143,7 +143,7 @@ All the prerequisites will be checked before start the processing.
 
 **Warning**  
 
-* rbamtools is an R package required for this tool. This package lost its support recently, so the best
+* rbamtools is a required R package. This package lost its support recently, so the best
 workaround now is to install it using a copy of the source code stored at an unnofficial github repo. To do this,
 you should run the following commands on your R console:
 

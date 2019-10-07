@@ -1266,7 +1266,7 @@ all the prerequisites will be checked before running
 
 **Warning**  
 
-* rbamtools is an R package required for this tool.
+* rbamtools is a required R package.
 This package lost its support recently, so the best
 workaround now is to install it using a copy of the source
 code stored at an unnofficial github repo. To do this,
