@@ -4,8 +4,8 @@
 # built and tested on Ubuntu 16.04.3 LTS 64bit
 # also tested on Debian GNU/Linux jessie/sid and Ubuntu 18.04.1
 
-version=0.6.3
-lastupdate=20190111
+version=0.6.4
+lastupdate=20191007
 
 # please, check the README.md file before using this script
 # there is also a version of the manual on the end of this file
@@ -1263,6 +1263,16 @@ deeptools v3.1.1 (@PATH)
 bedtools v2.26.0 (also tested with v2.21.0) (@ PATH)
 
 all the prerequisites will be checked before running
+
+**Warning**  
+
+* rbamtools is an R package required for this tool.
+This package lost its support recently, so the best
+workaround now is to install it using a copy of the source
+code stored at an unnofficial github repo. To do this,
+you should run the following commands on your R console:
+
+library("devtools") ; devtools::install_github("cran/rbamtools")
 
 ###################################
 # PURPOSE AND GENERAL INFO

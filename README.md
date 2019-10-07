@@ -131,15 +131,25 @@ GATCGTCGGACTGTAGAACTCTGAACGTGTAGA
 
 Furthermore, you have to install manually the program requisites. Maybe newer versions are compatible, but these were the ones used to build and test this script:  
 
-trimmomatic v0.36 (must be located @ /opt/Trimmomatic-0.36/trimmomatic-0.36.jar)  
-hisat2 v2.1.0 (@ PATH)  
-curl v7.58.0 (@ PATH)  
-samtools v1.7 (@ PATH)  
-mmr default version (@ PATH)  
-deeptools v3.1.1 (@PATH)  
-bedtools v2.26.0 (also tested with v2.21.0) (@ PATH)  
+* trimmomatic v0.36 (must be located @ /opt/Trimmomatic-0.36/trimmomatic-0.36.jar)  
+* hisat2 v2.1.0 (@ PATH)  
+* curl v7.58.0 (@ PATH)  
+* samtools v1.7 (@ PATH)  
+* mmr default version (@ PATH)  
+* deeptools v3.1.1 (@PATH)  
+* bedtools v2.26.0 (also tested with v2.21.0) (@ PATH)  
 
 All the prerequisites will be checked before start the processing.
+
+**Warning**  
+
+* rbamtools is an R package required for this tool. This package lost its support recently, so the best
+workaround now is to install it using a copy of the source code stored at an unnofficial github repo. To do this,
+you should run the following commands on your R console:
+
+```r
+library("devtools") ; devtools::install_github("cran/rbamtools")
+```
 
 ## Citation
 
