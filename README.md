@@ -148,7 +148,9 @@ workaround now is to install it using a copy of the source code stored at an unn
 you should run the following commands on your R console:
 
 ```r
-library("devtools") ; devtools::install_github("cran/rbamtools")
+library("devtools")
+devtools::install_github("cran/rbamtools")
+devtools::install_github("cran/refGenome")
 ```
 
 ## Citation
